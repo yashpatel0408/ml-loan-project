@@ -1,8 +1,14 @@
 import streamlit as st
 import pandas as pd
 import joblib
+from auth import show_auth_page
+from dashboard import save_prediction, show_dashboard
 
-st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="centered")
+if "user" not in st.session_state:
+    show_auth_page()
+    st.stop()
+
+st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="wide")
 
 st.markdown("""
 <style>
@@ -16,6 +22,20 @@ html, body, [class*="css"], .stApp {
     color: #eef0f8 !important;
 }
 .stApp { background: #0c0f1a !important; }
+
+header[data-testid="stHeader"] { display: none !important; }
+
+section.main > div {
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+.block-container {
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    padding-top: 0 !important;
+}
 
 .nav {
     background: #080b14;
@@ -31,6 +51,7 @@ html, body, [class*="css"], .stApp {
 .nav-right { display: flex; align-items: center; gap: 10px; }
 .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; }
 .nav-tag { font-size: 0.65rem; color: #4a5580; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; }
+.nav-email { font-size: 0.72rem; color: #4a5580; }
 
 .hero {
     background: linear-gradient(180deg, #0f1528 0%, #0c0f1a 100%);
@@ -50,8 +71,7 @@ html, body, [class*="css"], .stApp {
     padding: 18px 20px;
     margin-bottom: 14px;
 }
-.section-head { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-.section-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #4a5580; }
+.section-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #4a5580; margin-bottom: 16px; }
 
 div[data-testid="stSelectbox"] label,
 div[data-testid="stNumberInput"] label {
@@ -78,7 +98,6 @@ div[data-testid="stNumberInput"] input {
 }
 
 div.stButton > button {
-    width: 100%;
     background: #6c8fff;
     color: #080b14;
     font-family: 'Geist', sans-serif;
@@ -86,19 +105,16 @@ div.stButton > button {
     font-size: 0.8rem;
     border: none;
     border-radius: 10px;
-    padding: 13px;
-    letter-spacing: 2px;
+    padding: 10px 18px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     cursor: pointer;
     transition: opacity 0.2s;
 }
 div.stButton > button:hover { opacity: 0.85; }
 
-.divider { height: 1px; background: #161c30; margin: 14px 0; }
-
 .result-approved { background: #060f10; border: 1px solid #0d4429; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
 .result-rejected { background: #150a0a; border: 1px solid #4a1515; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
-.result-eyebrow { font-size: 0.62rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
 .result-main { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; margin-bottom: 4px; line-height: 1; }
 
 .risk-block {
@@ -145,16 +161,37 @@ div.stButton > button:hover { opacity: 0.85; }
 
 pipe = joblib.load("models/loan_model.pkl")
 
-st.markdown("""
+# ── Nav ──
+st.markdown(f"""
 <div class="nav">
     <div class="nav-logo">Loan<em>Sense</em></div>
     <div class="nav-right">
         <div class="nav-dot"></div>
-        <div class="nav-tag">AI Credit Engine</div>
+        <div class="nav-email">{st.session_state.get("email", "")}</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
+# ── Nav Buttons ──
+col1, col2, col3 = st.columns([5, 1, 1])
+with col2:
+    if st.button("📋 History"):
+        st.session_state["page"] = "dashboard"
+        st.rerun()
+with col3:
+    if st.button("Logout"):
+        st.session_state.clear()
+        st.rerun()
+
+# ── Dashboard Page ──
+if st.session_state.get("page") == "dashboard":
+    show_dashboard(st.session_state["email"])
+    if st.button("← Back to Assessment"):
+        st.session_state["page"] = "main"
+        st.rerun()
+    st.stop()
+
+# ── Hero ──
 st.markdown("""
 <div class="hero">
     <div class="hero-eyebrow">Credit Assessment Portal</div>
@@ -163,7 +200,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="section"><div class="section-head"><div class="section-label">Personal Information</div></div>', unsafe_allow_html=True)
+# ── Personal Info ──
+st.markdown('<div class="section"><div class="section-label">Personal Information</div>', unsafe_allow_html=True)
 col1, col2 = st.columns(2)
 with col1:
     gender = st.selectbox("Gender", ["Male", "Female"])
@@ -173,7 +211,8 @@ with col2:
     self_employed = st.selectbox("Employment Type", ["No", "Yes"], format_func=lambda x: "Salaried" if x == "No" else "Self Employed")
 st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="section"><div class="section-head"><div class="section-label">Financial Details</div></div>', unsafe_allow_html=True)
+# ── Financial Details ──
+st.markdown('<div class="section"><div class="section-label">Financial Details</div>', unsafe_allow_html=True)
 col3, col4 = st.columns(2)
 with col3:
     applicant_income = st.number_input("Monthly Income (₹)", min_value=0, value=5000, step=500)
@@ -210,7 +249,6 @@ if st.button("RUN CREDIT ASSESSMENT →"):
 
     prob = pipe.predict_proba(new_df)[0][1]
 
-    # Business Rule Override
     if ratio >= 2.0 and credit_history == 1:
         prob = max(prob, 0.82)
     elif ratio >= 1.0 and credit_history == 1:
@@ -220,13 +258,14 @@ if st.button("RUN CREDIT ASSESSMENT →"):
 
     decision = "APPROVED" if prob >= 0.5 else "REJECTED"
     bar_width = round(prob * 100, 1)
+    risk_title = "N/A"
 
     if decision == "APPROVED":
         st.markdown(f"""
         <div class="result-approved">
-            <div class="result-eyebrow" style="color:#34d399">Decision</div>
+            <div style="font-size:0.62rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#34d399;margin-bottom:8px">Decision</div>
             <div class="result-main" style="color:#34d399">✓ Loan Approved</div>
-            <div class="result-conf" style="color:#34d399; opacity:0.7">Approval Confidence — {bar_width}%</div>
+            <div style="font-size:0.78rem;color:#34d399;opacity:0.7">Approval Confidence — {bar_width}%</div>
             <div style="margin-top:14px">
                 <div style="display:flex;justify-content:space-between;margin-bottom:5px">
                     <span style="font-size:0.7rem;color:#4a5580;font-weight:500">Confidence Score</span>
@@ -284,12 +323,21 @@ if st.button("RUN CREDIT ASSESSMENT →"):
         </div>
         """, unsafe_allow_html=True)
 
+        save_prediction(st.session_state["email"], {
+            "income": applicant_income,
+            "loan_amount": loan_amount,
+            "credit_history": credit_history,
+            "decision": decision,
+            "probability": bar_width,
+            "risk": risk_title
+        })
+
     else:
         st.markdown(f"""
         <div class="result-rejected">
-            <div class="result-eyebrow" style="color:#f87171">Decision</div>
+            <div style="font-size:0.62rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#f87171;margin-bottom:8px">Decision</div>
             <div class="result-main" style="color:#f87171">✗ Loan Rejected</div>
-            <div class="result-conf" style="color:#f87171; opacity:0.7">Approval Confidence — {bar_width}%</div>
+            <div style="font-size:0.78rem;color:#f87171;opacity:0.7">Approval Confidence — {bar_width}%</div>
             <div style="margin-top:14px">
                 <div style="display:flex;justify-content:space-between;margin-bottom:5px">
                     <span style="font-size:0.7rem;color:#4a5580;font-weight:500">Confidence Score</span>
@@ -311,5 +359,14 @@ if st.button("RUN CREDIT ASSESSMENT →"):
             <div class="suggestion-item">→ Reapply after addressing the above factors</div>
         </div>
         """, unsafe_allow_html=True)
+
+        save_prediction(st.session_state["email"], {
+            "income": applicant_income,
+            "loan_amount": loan_amount,
+            "credit_history": credit_history,
+            "decision": decision,
+            "probability": bar_width,
+            "risk": "N/A"
+        })
 
 st.markdown('<div class="footer-note">LoanSense AI · Powered by Machine Learning · For internal assessment use only</div>', unsafe_allow_html=True)

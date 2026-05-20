@@ -25,7 +25,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 pipe = Pipeline([
     ("scaler", StandardScaler()),
-    ("model", RandomForestClassifier(n_estimators=100, random_state=42))
+    (("model", RandomForestClassifier(n_estimators=100, random_state=42)))
 ])
 
 pipe.fit(X_train, y_train)

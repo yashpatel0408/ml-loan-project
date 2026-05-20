@@ -1,0 +1,4 @@
+firebase_key.json
+models/loan_model.pkl
+__pycache__/
+*.pyc

@@ -96,7 +96,27 @@ div[data-testid="stNumberInput"] input {
     font-weight: 500 !important;
 }
 
-.main-predict-btn > button {
+div[data-testid="stHorizontalBlock"] div.stButton > button {
+    background: transparent !important;
+    color: #4a5580 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    padding: 5px 16px !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    width: auto !important;
+    min-width: 70px !important;
+    margin-top: 6px !important;
+    text-transform: uppercase !important;
+}
+div[data-testid="stHorizontalBlock"] div.stButton > button:hover {
+    color: #eef0f8 !important;
+    border-color: #6c8fff !important;
+    background: #0f1528 !important;
+}
+
+.predict-btn div.stButton > button {
     width: 100% !important;
     background: #6c8fff !important;
     color: #080b14 !important;
@@ -108,26 +128,9 @@ div[data-testid="stNumberInput"] input {
     padding: 13px !important;
     letter-spacing: 2px !important;
     text-transform: uppercase !important;
-    cursor: pointer !important;
-    transition: opacity 0.2s !important;
+    margin-top: 0 !important;
 }
-.main-predict-btn > button:hover { opacity: 0.85 !important; }
-
-.nav-btn div.stButton > button {
-    background: transparent !important;
-    color: #4a5580 !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 8px !important;
-    padding: 5px 12px !important;
-    font-size: 0.68rem !important;
-    letter-spacing: 1px !important;
-    width: auto !important;
-    margin-top: 6px !important;
-}
-.nav-btn div.stButton > button:hover {
-    color: #eef0f8 !important;
-    border-color: #6c8fff !important;
-}
+.predict-btn div.stButton > button:hover { opacity: 0.85 !important; }
 
 .result-approved { background: #060f10; border: 1px solid #0d4429; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
 .result-rejected { background: #150a0a; border: 1px solid #4a1515; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
@@ -191,26 +194,22 @@ st.markdown(f"""
 # ── Nav Buttons ──
 col1, col2, col3 = st.columns([6, 1, 1])
 with col2:
-    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
     if st.button("History"):
         st.session_state["page"] = "dashboard"
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 with col3:
-    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
     if st.button("Logout"):
         st.session_state.clear()
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Dashboard Page ──
 if st.session_state.get("page") == "dashboard":
     show_dashboard(st.session_state["email"])
-    st.markdown('<div class="nav-btn">', unsafe_allow_html=True)
-    if st.button("← Back"):
-        st.session_state["page"] = "main"
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+    col_a, col_b, col_c = st.columns([6, 1, 1])
+    with col_a:
+        if st.button("← Back to Assessment"):
+            st.session_state["page"] = "main"
+            st.rerun()
     st.stop()
 
 # ── Hero ──
@@ -254,7 +253,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="main-predict-btn">', unsafe_allow_html=True)
+st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
 predict_clicked = st.button("RUN CREDIT ASSESSMENT →")
 st.markdown('</div>', unsafe_allow_html=True)
 

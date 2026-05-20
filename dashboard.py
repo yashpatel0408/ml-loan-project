@@ -193,7 +193,7 @@ def show_dashboard(user_email):
             <div class="history-card">
                 <div>
                     <div class="history-label">Income / Loan Amount</div>
-                    <div class="history-value">₹{d['income']:,} / ₹{d['loan_amount']:,}k</div>
+                    <div class="history-value">₹{d['income']:,} / ₹{d['loan_amount']:,}</div>
                     <div class="history-date">{date_str}</div>
                 </div>
                 <div style="text-align:right">

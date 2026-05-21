@@ -4,347 +4,355 @@ import joblib
 from auth import show_auth_page
 from dashboard import save_prediction, show_dashboard
 
+# ─────────────────────────────────────────────
+# AUTH CHECK
+# ─────────────────────────────────────────────
+
 if "user" not in st.session_state:
     show_auth_page()
     st.stop()
 
-st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="wide")
+# ─────────────────────────────────────────────
+# PAGE CONFIG
+# ─────────────────────────────────────────────
+
+st.set_page_config(
+    page_title="LoanSense AI",
+    page_icon="🏦",
+    layout="wide"
+)
+
+# ─────────────────────────────────────────────
+# SESSION STATE FIX
+# ─────────────────────────────────────────────
+
+if "page" not in st.session_state:
+    st.session_state.page = "main"
+
+# ─────────────────────────────────────────────
+# CSS
+# ─────────────────────────────────────────────
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=Geist:wght@300;400;500;600&display=swap');
 
-*, *::before, *::after {
-    box-sizing: border-box;
-}
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@300;600&family=Geist:wght@300;400;500;600&display=swap');
 
-html, body, [class*="css"], .stApp {
-    font-family: 'Geist', sans-serif !important;
-    background-color: #0c0f1a !important;
-    color: #eef0f8 !important;
-}
-
-.stApp {
+html, body, .stApp {
     background: #0c0f1a !important;
+    color: #eef0f8 !important;
+    font-family: 'Geist', sans-serif !important;
 }
 
 header[data-testid="stHeader"] {
     display: none !important;
 }
 
-section.main > div {
-    max-width: 720px !important;
-    margin: 0 auto !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-}
-
 .block-container {
-    max-width: 720px !important;
-    margin: 0 auto !important;
-    padding-top: 0 !important;
+    max-width: 760px !important;
+    padding-top: 0rem !important;
 }
 
 /* ───────── NAVBAR ───────── */
 
 .nav-wrapper {
-    width: 100%;
     background: #080b14;
     border-bottom: 1px solid #161c30;
-    padding: 10px 22px;
-    margin: -1rem -1rem 0 -1rem;
-}
-
-.nav-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    overflow: hidden;
+    padding: 12px 18px;
+    margin: -1rem -1rem 1.5rem -1rem;
 }
 
 .nav-logo {
     font-family: 'Fraunces', serif;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     color: #eef0f8;
     font-weight: 600;
-    letter-spacing: -0.5px;
-    white-space: nowrap;
 }
 
 .nav-logo em {
-    font-style: italic;
     color: #6c8fff;
-}
-
-.nav-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #6c8fff;
-    opacity: 0.7;
-    flex-shrink: 0;
+    font-style: italic;
 }
 
 .nav-email {
     font-size: 0.72rem;
-    color: #4a5580;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    color: #5b6487;
 }
 
-div[data-testid="column"]:nth-of-type(2) .stButton > button,
-div[data-testid="column"]:nth-of-type(3) .stButton > button {
+div[data-testid="column"]:nth-of-type(2) button,
+div[data-testid="column"]:nth-of-type(3) button {
+
+    width: 100% !important;
+    height: 42px !important;
 
     background: transparent !important;
-    color: #4a5580 !important;
-
     border: 1px solid #1e2540 !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
 
-    padding: 8px 16px !important;
+    color: #c7d2fe !important;
 
-    font-size: 0.7rem !important;
+    font-size: 0.72rem !important;
     font-weight: 600 !important;
 
     letter-spacing: 1px !important;
     text-transform: uppercase !important;
 
-    min-width: 110px !important;
-    width: 100% !important;
-
-    height: 42px !important;
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
     white-space: nowrap !important;
-
-    transition: all 0.15s ease !important;
 }
 
-div[data-testid="column"]:nth-of-type(2) .stButton > button:hover {
-    color: #eef0f8 !important;
+div[data-testid="column"]:nth-of-type(2) button:hover {
     border-color: #6c8fff !important;
-    background: #0f1528 !important;
+    color: white !important;
 }
 
-div[data-testid="column"]:nth-of-type(3) .stButton > button:hover {
-    color: #f87171 !important;
-    border-color: #4a1515 !important;
-    background: #150a0a !important;
+div[data-testid="column"]:nth-of-type(3) button:hover {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
 }
 
 /* ───────── HERO ───────── */
 
 .hero {
-    background: linear-gradient(180deg, #0f1528 0%, #0c0f1a 100%);
-    padding: 26px 4px 20px;
-    border-bottom: 1px solid #161c30;
+    background: linear-gradient(180deg, #111827 0%, #0c0f1a 100%);
+    padding: 28px 8px 24px;
+    border-radius: 18px;
     margin-bottom: 20px;
+    border: 1px solid #1e2540;
 }
 
-.hero-eyebrow {
-    font-size: 0.62rem;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
+.hero-small {
     color: #6c8fff;
-    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 0.65rem;
+    font-weight: 600;
 }
 
 .hero-title {
     font-family: 'Fraunces', serif;
-    font-size: 1.75rem;
-    color: #eef0f8;
-    font-weight: 300;
+    font-size: 2rem;
+    margin-top: 10px;
     line-height: 1.2;
-    margin-bottom: 6px;
-}
-
-.hero-title strong {
-    font-weight: 600;
 }
 
 .hero-sub {
-    font-size: 0.8rem;
-    color: #4a5580;
-    font-weight: 400;
-    line-height: 1.5;
+    color: #667085;
+    margin-top: 10px;
+    font-size: 0.85rem;
 }
 
-/* ───────── SECTIONS ───────── */
+/* ───────── CARD ───────── */
 
-.section {
-    background: #0f1528;
+.card {
+    background: #111827;
     border: 1px solid #1e2540;
-    border-radius: 14px;
-    padding: 18px 20px;
-    margin-bottom: 14px;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 18px;
 }
 
-.section-label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 2.5px;
+.card-title {
+    color: #6b7280;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    color: #4a5580;
     margin-bottom: 16px;
+    font-weight: 600;
 }
 
 /* ───────── INPUTS ───────── */
 
-div[data-testid="stSelectbox"] label,
-div[data-testid="stNumberInput"] label {
-    color: #4a5580 !important;
-    font-size: 0.68rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.8px !important;
-    text-transform: uppercase !important;
+label {
+    color: #9ca3af !important;
 }
 
-div[data-testid="stSelectbox"] > div > div {
-    background: #080b14 !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 8px !important;
-    color: #c8cfe8 !important;
-    font-size: 0.875rem !important;
-}
-
-div[data-testid="stNumberInput"] input {
-    background: #080b14 !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 8px !important;
-    color: #eef0f8 !important;
-    font-size: 0.875rem !important;
-    font-weight: 500 !important;
+.stSelectbox div[data-baseweb="select"],
+.stNumberInput input {
+    background: #0b1220 !important;
+    border: 1px solid #1e293b !important;
+    border-radius: 10px !important;
+    color: white !important;
 }
 
 /* ───────── BUTTON ───────── */
 
-.predict-btn div.stButton > button {
+.predict-btn button {
     width: 100% !important;
     background: #6c8fff !important;
-    color: #080b14 !important;
-    font-weight: 600 !important;
-    font-size: 0.8rem !important;
+    color: #0c0f1a !important;
     border: none !important;
-    border-radius: 10px !important;
-    padding: 13px !important;
+    border-radius: 12px !important;
+    height: 52px !important;
+    font-weight: 700 !important;
     letter-spacing: 2px !important;
-    text-transform: uppercase !important;
 }
 
-.predict-btn div.stButton > button:hover {
-    opacity: 0.85 !important;
+.predict-btn button:hover {
+    opacity: 0.9;
 }
 
 /* ───────── RESULT ───────── */
 
-.result-approved {
-    background: #060f10;
-    border: 1px solid #0d4429;
-    border-radius: 14px;
-    padding: 20px 22px;
-    margin-top: 14px;
+.result-box {
+    border-radius: 18px;
+    padding: 22px;
+    margin-top: 18px;
 }
 
-.result-rejected {
-    background: #150a0a;
-    border: 1px solid #4a1515;
-    border-radius: 14px;
-    padding: 20px 22px;
-    margin-top: 14px;
+.approved {
+    background: #07130c;
+    border: 1px solid #14532d;
 }
 
-.result-main {
-    font-family: 'Fraunces', serif;
+.rejected {
+    background: #160809;
+    border: 1px solid #7f1d1d;
+}
+
+.result-title {
     font-size: 2rem;
+    font-family: 'Fraunces', serif;
     font-weight: 600;
-    margin-bottom: 4px;
-    line-height: 1;
 }
 
 .footer-note {
     text-align: center;
-    font-size: 0.7rem;
-    color: #2a3050;
-    margin-top: 18px;
-    padding-top: 14px;
-    border-top: 1px solid #161c30;
+    color: #394150;
+    font-size: 0.72rem;
+    margin-top: 30px;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-pipe = joblib.load("models/loan_model.pkl")
-email = st.session_state.get("email", "")
+# ─────────────────────────────────────────────
+# MODEL
+# ─────────────────────────────────────────────
 
-# ───────── NAVBAR ─────────
+pipe = joblib.load("models/loan_model.pkl")
+
+email = st.session_state.get("email", "user@gmail.com")
+
+# ─────────────────────────────────────────────
+# NAVBAR
+# ─────────────────────────────────────────────
 
 st.markdown('<div class="nav-wrapper">', unsafe_allow_html=True)
 
-col_logo, col_hist, col_logout = st.columns([6, 1.3, 1.3])
+col1, col2, col3 = st.columns([6, 1.5, 1.5])
 
-with col_logo:
+with col1:
     st.markdown(f"""
-    <div class="nav-left">
-        <div class="nav-logo">Loan<em>Sense</em></div>
-        <div class="nav-dot"></div>
-        <div class="nav-email">{email}</div>
+    <div class="nav-logo">
+        Loan<em>Sense</em>
+    </div>
+    <div class="nav-email">
+        {email}
     </div>
     """, unsafe_allow_html=True)
 
-with col_hist:
-    if st.button("History", key="nav_history", use_container_width=True):
-        st.session_state["page"] = "dashboard"
+with col2:
+    if st.button("History", use_container_width=True):
+
+        st.session_state.page = "dashboard"
+
         st.rerun()
 
-with col_logout:
-    if st.button("Logout", key="nav_logout", use_container_width=True):
+with col3:
+    if st.button("Logout", use_container_width=True):
+
         st.session_state.clear()
+
         st.rerun()
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# ───────── HERO ─────────
+# ─────────────────────────────────────────────
+# HISTORY PAGE
+# ─────────────────────────────────────────────
+
+if st.session_state.page == "dashboard":
+
+    show_dashboard(email)
+
+    if st.button("← Back"):
+
+        st.session_state.page = "main"
+
+        st.rerun()
+
+    st.stop()
+
+# ─────────────────────────────────────────────
+# HERO
+# ─────────────────────────────────────────────
 
 st.markdown("""
 <div class="hero">
-    <div class="hero-eyebrow">Credit Assessment Portal</div>
-    <div class="hero-title">Loan <strong>Eligibility</strong><br>Assessment</div>
-    <div class="hero-sub">
-        Enter applicant details — instant AI-driven decision with credit risk profile
-    </div>
+
+<div class="hero-small">
+Credit Assessment Portal
+</div>
+
+<div class="hero-title">
+Loan <strong>Eligibility</strong><br>
+Assessment
+</div>
+
+<div class="hero-sub">
+Enter applicant details — instant AI-driven decision with credit risk profile
+</div>
+
 </div>
 """, unsafe_allow_html=True)
 
-# ───────── FORM ─────────
+# ─────────────────────────────────────────────
+# PERSONAL INFO
+# ─────────────────────────────────────────────
 
-st.markdown('<div class="section"><div class="section-label">Personal Information</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="card">
+<div class="card-title">Personal Information</div>
+""", unsafe_allow_html=True)
 
-col1, col2 = st.columns(2)
+c1, c2 = st.columns(2)
 
-with col1:
+with c1:
     gender = st.selectbox("Gender", ["Male", "Female"])
-    education = st.selectbox("Education", ["Graduate", "Not Graduate"])
 
-with col2:
-    married = st.selectbox("Marital Status", ["Yes", "No"])
+    education = st.selectbox(
+        "Education",
+        ["Graduate", "Not Graduate"]
+    )
+
+with c2:
+    married = st.selectbox(
+        "Marital Status",
+        ["Yes", "No"]
+    )
+
     self_employed = st.selectbox(
         "Employment Type",
         ["No", "Yes"],
-        format_func=lambda x: "Salaried" if x == "No" else "Self Employed"
+        format_func=lambda x:
+        "Salaried" if x == "No"
+        else "Self Employed"
     )
 
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown('<div class="section"><div class="section-label">Financial Details</div>', unsafe_allow_html=True)
+# ─────────────────────────────────────────────
+# FINANCIAL
+# ─────────────────────────────────────────────
 
-col3, col4 = st.columns(2)
+st.markdown("""
+<div class="card">
+<div class="card-title">Financial Details</div>
+""", unsafe_allow_html=True)
 
-with col3:
+c3, c4 = st.columns(2)
+
+with c3:
     applicant_income = st.number_input(
         "Monthly Income (₹)",
         min_value=0,
@@ -352,7 +360,7 @@ with col3:
         step=500
     )
 
-with col4:
+with c4:
     loan_amount = st.number_input(
         "Loan Amount (₹ thousands)",
         min_value=0,
@@ -364,31 +372,35 @@ credit_history = st.selectbox(
     "Credit History",
     [1, 0],
     format_func=lambda x:
-        "Clean — No previous defaults"
-        if x == 1 else
-        "Defaulted — Past dues recorded"
+    "Clean — No defaults"
+    if x == 1
+    else "Defaulted — Past dues"
 )
 
-st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
 
-# ───────── BUTTON ─────────
+# ─────────────────────────────────────────────
+# PREDICT BUTTON
+# ─────────────────────────────────────────────
 
 st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
 
-predict_clicked = st.button(
+predict = st.button(
     "RUN CREDIT ASSESSMENT →",
-    key="predict_btn"
+    use_container_width=True
 )
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# ───────── PREDICTION ─────────
+# ─────────────────────────────────────────────
+# PREDICTION
+# ─────────────────────────────────────────────
 
-if predict_clicked:
+if predict:
 
-    ratio = round(applicant_income / loan_amount, 2) if loan_amount > 0 else 0
+    ratio = applicant_income / loan_amount if loan_amount > 0 else 0
 
-    new_customer = {
+    customer = {
         "ApplicantIncome": applicant_income,
         "LoanAmount": loan_amount,
         "Income_Loan_Ratio": ratio,
@@ -399,54 +411,81 @@ if predict_clicked:
         "Self_Employed_Yes": 1 if self_employed == "Yes" else 0
     }
 
-    new_df = pd.DataFrame([new_customer])
-    new_df = new_df.reindex(columns=pipe.feature_names_in_, fill_value=0)
+    df = pd.DataFrame([customer])
 
-    prob = pipe.predict_proba(new_df)[0][1]
+    df = df.reindex(
+        columns=pipe.feature_names_in_,
+        fill_value=0
+    )
+
+    prob = pipe.predict_proba(df)[0][1]
 
     decision = "APPROVED" if prob >= 0.5 else "REJECTED"
 
-    bar_width = round(prob * 100, 1)
+    confidence = round(prob * 100, 1)
+
+    # SAVE HISTORY
+    save_prediction(email, {
+        "income": applicant_income,
+        "loan_amount": loan_amount,
+        "credit_history": credit_history,
+        "decision": decision,
+        "probability": confidence
+    })
 
     if decision == "APPROVED":
 
         st.markdown(f"""
-        <div class="result-approved">
-            <div style="font-size:0.62rem;font-weight:600;
-            letter-spacing:3px;text-transform:uppercase;
-            color:#34d399;margin-bottom:8px">
-            Decision
-            </div>
+        <div class="result-box approved">
 
-            <div class="result-main" style="color:#34d399">
-            ✓ Loan Approved
-            </div>
+        <div style="color:#4ade80;
+        text-transform:uppercase;
+        letter-spacing:2px;
+        font-size:0.7rem;
+        margin-bottom:8px;">
+        Decision
+        </div>
 
-            <div style="font-size:0.78rem;color:#34d399;opacity:0.7">
-            Approval Confidence — {bar_width}%
-            </div>
+        <div class="result-title"
+        style="color:#4ade80;">
+        ✓ Loan Approved
+        </div>
+
+        <div style="margin-top:8px;color:#86efac;">
+        Approval Confidence — {confidence}%
+        </div>
+
         </div>
         """, unsafe_allow_html=True)
 
     else:
 
         st.markdown(f"""
-        <div class="result-rejected">
-            <div style="font-size:0.62rem;font-weight:600;
-            letter-spacing:3px;text-transform:uppercase;
-            color:#f87171;margin-bottom:8px">
-            Decision
-            </div>
+        <div class="result-box rejected">
 
-            <div class="result-main" style="color:#f87171">
-            ✗ Loan Rejected
-            </div>
+        <div style="color:#f87171;
+        text-transform:uppercase;
+        letter-spacing:2px;
+        font-size:0.7rem;
+        margin-bottom:8px;">
+        Decision
+        </div>
 
-            <div style="font-size:0.78rem;color:#f87171;opacity:0.7">
-            Approval Confidence — {bar_width}%
-            </div>
+        <div class="result-title"
+        style="color:#f87171;">
+        ✗ Loan Rejected
+        </div>
+
+        <div style="margin-top:8px;color:#fca5a5;">
+        Approval Confidence — {confidence}%
+        </div>
+
         </div>
         """, unsafe_allow_html=True)
+
+# ─────────────────────────────────────────────
+# FOOTER
+# ─────────────────────────────────────────────
 
 st.markdown("""
 <div class="footer-note">

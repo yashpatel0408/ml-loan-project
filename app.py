@@ -36,93 +36,157 @@ section.main > div {
     padding-top: 0 !important;
 }
 
-.navbar {
+.nav-bar {
     background: #080b14;
     border-bottom: 1px solid #161c30;
-    margin: -1rem -1rem 0 -1rem;
-    padding: 0 16px;
-    height: 52px;
+    padding: 0px 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin: -1rem -1rem 0 -1rem;
+    height: 52px;
 }
-.navbar-left { display: flex; align-items: center; gap: 10px; }
+.nav-left { display: flex; align-items: center; gap: 10px; }
 .nav-logo { font-family: 'Fraunces', serif; font-size: 1.2rem; color: #eef0f8; font-weight: 600; letter-spacing: -0.5px; }
 .nav-logo em { font-style: italic; color: #6c8fff; }
 .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; }
 .nav-email { font-size: 0.72rem; color: #4a5580; }
-.navbar-right { display: flex; align-items: center; gap: 8px; }
-.nbtn {
-    background: transparent;
-    color: #4a5580;
-    border: 1px solid #1e2540;
-    border-radius: 8px;
-    padding: 5px 16px;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    font-family: 'Geist', sans-serif;
-    white-space: nowrap;
-    transition: all 0.15s;
+.nav-right-placeholder { display: flex; align-items: center; gap: 8px; }
+
+div[data-testid="stHorizontalBlock"] {
+    background: #080b14 !important;
+    margin: -4px -1rem 0 -1rem !important;
+    padding: 8px 22px 10px 22px !important;
+    border-bottom: 1px solid #161c30 !important;
+    gap: 6px !important;
+    align-items: center !important;
 }
-.nbtn:hover { color: #eef0f8; border-color: #6c8fff; background: #0f1528; }
-.nbtn.danger:hover { color: #f87171; border-color: #4a1515; background: #150a0a; }
+
+div[data-testid="stHorizontalBlock"] > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+}
+
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) div.stButton > button,
+div[data-testid="stHorizontalBlock"] > div:nth-child(3) div.stButton > button {
+    background: transparent !important;
+    color: #4a5580 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    padding: 4px 14px !important;
+    font-size: 0.65rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    width: auto !important;
+    min-width: 80px !important;
+    float: right !important;
+    transition: all 0.15s !important;
+}
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) div.stButton > button:hover {
+    color: #eef0f8 !important;
+    border-color: #6c8fff !important;
+    background: #0f1528 !important;
+}
+div[data-testid="stHorizontalBlock"] > div:nth-child(3) div.stButton > button:hover {
+    color: #f87171 !important;
+    border-color: #4a1515 !important;
+    background: #150a0a !important;
+}
 
 .hero {
     background: linear-gradient(180deg, #0f1528 0%, #0c0f1a 100%);
     padding: 26px 4px 20px;
     border-bottom: 1px solid #161c30;
     margin-bottom: 20px;
-    margin-top: 0;
 }
 .hero-eyebrow { font-size: 0.62rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #6c8fff; margin-bottom: 8px; }
 .hero-title { font-family: 'Fraunces', serif; font-size: 1.75rem; color: #eef0f8; font-weight: 300; line-height: 1.2; margin-bottom: 6px; }
 .hero-title strong { font-weight: 600; }
 .hero-sub { font-size: 0.8rem; color: #4a5580; font-weight: 400; line-height: 1.5; }
 
-.section { background: #0f1528; border: 1px solid #1e2540; border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
+.section {
+    background: #0f1528;
+    border: 1px solid #1e2540;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+}
 .section-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #4a5580; margin-bottom: 16px; }
 
 div[data-testid="stSelectbox"] label,
 div[data-testid="stNumberInput"] label {
-    color: #4a5580 !important; font-size: 0.68rem !important; font-weight: 600 !important;
-    letter-spacing: 0.8px !important; text-transform: uppercase !important;
+    color: #4a5580 !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
 }
 div[data-testid="stSelectbox"] > div > div {
-    background: #080b14 !important; border: 1px solid #1e2540 !important;
-    border-radius: 8px !important; color: #c8cfe8 !important; font-size: 0.875rem !important;
+    background: #080b14 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    color: #c8cfe8 !important;
+    font-size: 0.875rem !important;
 }
 div[data-testid="stNumberInput"] input {
-    background: #080b14 !important; border: 1px solid #1e2540 !important;
-    border-radius: 8px !important; color: #eef0f8 !important;
-    font-size: 0.875rem !important; font-weight: 500 !important;
+    background: #080b14 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    color: #eef0f8 !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
 }
 
 .predict-btn div.stButton > button {
-    width: 100% !important; background: #6c8fff !important; color: #080b14 !important;
-    font-family: 'Geist', sans-serif !important; font-weight: 600 !important;
-    font-size: 0.8rem !important; border: none !important; border-radius: 10px !important;
-    padding: 13px !important; letter-spacing: 2px !important; text-transform: uppercase !important;
-    white-space: nowrap !important;
+    width: 100% !important;
+    background: #6c8fff !important;
+    color: #080b14 !important;
+    font-family: 'Geist', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    border: none !important;
+    border-radius: 10px !important;
+    padding: 13px !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase !important;
+    float: none !important;
 }
 .predict-btn div.stButton > button:hover { opacity: 0.85 !important; }
 
 .back-btn div.stButton > button {
-    background: transparent !important; color: #4a5580 !important;
-    border: 1px solid #1e2540 !important; border-radius: 8px !important;
-    padding: 6px 16px !important; font-size: 0.68rem !important; font-weight: 600 !important;
-    letter-spacing: 1px !important; text-transform: uppercase !important;
-    white-space: nowrap !important; margin-top: 1rem !important;
+    background: transparent !important;
+    color: #4a5580 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    padding: 6px 16px !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    margin-top: 1rem !important;
+    float: none !important;
 }
-.back-btn div.stButton > button:hover { color: #eef0f8 !important; border-color: #6c8fff !important; }
+.back-btn div.stButton > button:hover {
+    color: #eef0f8 !important;
+    border-color: #6c8fff !important;
+}
 
 .result-approved { background: #060f10; border: 1px solid #0d4429; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
 .result-rejected { background: #150a0a; border: 1px solid #4a1515; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
 .result-main { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; margin-bottom: 4px; line-height: 1; }
 
-.risk-block { background: #0f1528; border: 1px solid #1e2540; border-radius: 14px; padding: 18px 20px; margin-top: 12px; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
+.risk-block {
+    background: #0f1528;
+    border: 1px solid #1e2540;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: start;
+}
 .risk-left { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .risk-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .risk-level-tag { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
@@ -137,7 +201,16 @@ div[data-testid="stNumberInput"] input {
 .suggestion-item { font-size: 0.82rem; color: #9ca3af; font-weight: 400; padding: 6px 0; border-bottom: 1px solid #161c30; }
 .suggestion-item:last-child { border-bottom: none; }
 
-.ratio-box { background: #080b14; border: 1px solid #1e2540; border-radius: 8px; padding: 10px 14px; margin-top: 12px; display: flex; justify-content: space-between; align-items: center; }
+.ratio-box {
+    background: #080b14;
+    border: 1px solid #1e2540;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 .ratio-label { font-size: 0.68rem; font-weight: 600; color: #4a5580; text-transform: uppercase; letter-spacing: 0.8px; }
 .ratio-value { font-size: 0.9rem; font-weight: 600; }
 
@@ -148,99 +221,30 @@ div[data-testid="stNumberInput"] input {
 pipe = joblib.load("models/loan_model.pkl")
 email = st.session_state.get("email", "")
 
-# ── Nav — Pure HTML with JS for session ──
-nav_html = f"""
-<div class="navbar">
-    <div class="navbar-left">
+# ── Nav ──
+col_logo, col_hist, col_logout = st.columns([5.2, 0.9, 0.9])
+with col_logo:
+    st.markdown(f"""
+    <div style="display:flex;align-items:center;gap:10px;height:100%;padding:8px 0">
         <div class="nav-logo">Loan<em>Sense</em></div>
         <div class="nav-dot"></div>
         <div class="nav-email">{email}</div>
     </div>
-    <div class="navbar-right">
-        <button class="nbtn" onclick="window.parent.document.querySelector('button[data-testid=\\"baseButton-secondary\\"][aria-label=\\"nav_history\\"]')?.click()">History</button>
-        <button class="nbtn danger" onclick="window.parent.document.querySelector('button[data-testid=\\"baseButton-secondary\\"][aria-label=\\"nav_logout\\"]')?.click()">Logout</button>
-    </div>
-</div>
-"""
-st.markdown(nav_html, unsafe_allow_html=True)
-
-# Hidden Streamlit buttons for session handling
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("nav_history", key="nav_history", help="nav_history"):
+    """, unsafe_allow_html=True)
+with col_hist:
+    if st.button("History", key="nav_history"):
         st.session_state["page"] = "dashboard"
         st.rerun()
-with col2:
-    if st.button("nav_logout", key="nav_logout", help="nav_logout"):
+with col_logout:
+    if st.button("Logout", key="nav_logout"):
         st.session_state.clear()
         st.rerun()
-
-st.markdown("""
-<style>
-div[data-testid="stHorizontalBlock"] {
-    position: absolute !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    height: 0 !important;
-    overflow: hidden !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# Visible clickable nav buttons
-st.markdown(f"""
-<div style="background:#080b14;border-bottom:1px solid #161c30;margin:-1px -1rem 0 -1rem;padding:0 16px;height:48px;display:flex;align-items:center;justify-content:flex-end;gap:8px;">
-</div>
-""", unsafe_allow_html=True)
-
-col_a, col_b, col_c = st.columns([5, 1, 1])
-with col_b:
-    hist_clicked = st.button("History", key="hist_visible")
-with col_c:
-    logout_clicked = st.button("Logout", key="logout_visible")
-
-st.markdown("""
-<style>
-div[data-testid="stHorizontalBlock"]:last-of-type {
-    background: #080b14 !important;
-    border-bottom: 1px solid #161c30 !important;
-    margin: -52px -1rem 0 -1rem !important;
-    padding: 8px 16px !important;
-}
-div[data-testid="stHorizontalBlock"]:last-of-type div.stButton > button {
-    background: transparent !important;
-    color: #4a5580 !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 8px !important;
-    padding: 5px 16px !important;
-    font-size: 0.68rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 1.5px !important;
-    text-transform: uppercase !important;
-    white-space: nowrap !important;
-    width: 100% !important;
-}
-div[data-testid="stHorizontalBlock"]:last-of-type div.stButton > button:hover {
-    color: #eef0f8 !important;
-    border-color: #6c8fff !important;
-    background: #0f1528 !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-if hist_clicked:
-    st.session_state["page"] = "dashboard"
-    st.rerun()
-
-if logout_clicked:
-    st.session_state.clear()
-    st.rerun()
 
 # ── Dashboard Page ──
 if st.session_state.get("page") == "dashboard":
     show_dashboard(email)
     st.markdown('<div class="back-btn">', unsafe_allow_html=True)
-    if st.button("← Back", key="back_btn"):
+    if st.button("← Back to Assessment", key="back_btn"):
         st.session_state["page"] = "main"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
@@ -305,6 +309,7 @@ if predict_clicked:
 
     new_df = pd.DataFrame([new_customer])
     new_df = new_df.reindex(columns=pipe.feature_names_in_, fill_value=0)
+
     prob = pipe.predict_proba(new_df)[0][1]
 
     if ratio >= 2.0 and credit_history == 1:
@@ -338,27 +343,34 @@ if predict_clicked:
 
         if prob >= 0.80:
             circle_bg, circle_border, tag_color, risk_title, risk_desc, pills, pill_bg, pill_color, pill_border = (
-                "#0f1f0f", "#15803d", "#15803d", "Low Risk Profile",
+                "#0f1f0f", "#15803d", "#15803d",
+                "Low Risk Profile",
                 "Strong repayment profile. High confidence in timely loan servicing throughout tenure.",
                 ["Standard interest rate", "No collateral needed", "Annual review"],
-                "#0d1a12", "#34d399", "#0d4429")
+                "#0d1a12", "#34d399", "#0d4429"
+            )
             emoji = "🟢"
         elif prob >= 0.60:
             circle_bg, circle_border, tag_color, risk_title, risk_desc, pills, pill_bg, pill_color, pill_border = (
-                "#1a1200", "#b45309", "#d97706", "Medium Risk Profile",
+                "#1a1200", "#b45309", "#d97706",
+                "Medium Risk Profile",
                 "Moderate repayment profile. Loan serviceable with standard monitoring through tenure.",
                 ["+0.5% risk premium", "Quarterly review", "No collateral needed"],
-                "#1a1200", "#fcd34d", "#78350f")
+                "#1a1200", "#fcd34d", "#78350f"
+            )
             emoji = "🟡"
         else:
             circle_bg, circle_border, tag_color, risk_title, risk_desc, pills, pill_bg, pill_color, pill_border = (
-                "#1a0a0a", "#b91c1c", "#ef4444", "High Risk Profile",
+                "#1a0a0a", "#b91c1c", "#ef4444",
+                "High Risk Profile",
                 "Weak repayment profile. Elevated risk — close monitoring and security required.",
                 ["+1.5% risk premium", "Monthly review", "Collateral required"],
-                "#1a0a0a", "#f87171", "#7f1d1d")
+                "#1a0a0a", "#f87171", "#7f1d1d"
+            )
             emoji = "🔴"
 
         pills_html = "".join([f'<div class="pill" style="background:{pill_bg};color:{pill_color};border:1px solid {pill_border}">{p}</div>' for p in pills])
+
         st.markdown(f"""
         <div class="risk-block">
             <div class="risk-left">
@@ -374,9 +386,14 @@ if predict_clicked:
         </div>
         """, unsafe_allow_html=True)
 
-        save_prediction(email, {"income": applicant_income, "loan_amount": loan_amount,
-            "credit_history": credit_history, "decision": decision,
-            "probability": bar_width, "risk": risk_title})
+        save_prediction(email, {
+            "income": applicant_income,
+            "loan_amount": loan_amount,
+            "credit_history": credit_history,
+            "decision": decision,
+            "probability": bar_width,
+            "risk": risk_title
+        })
 
     else:
         st.markdown(f"""
@@ -406,8 +423,13 @@ if predict_clicked:
         </div>
         """, unsafe_allow_html=True)
 
-        save_prediction(email, {"income": applicant_income, "loan_amount": loan_amount,
-            "credit_history": credit_history, "decision": decision,
-            "probability": bar_width, "risk": "N/A"})
+        save_prediction(email, {
+            "income": applicant_income,
+            "loan_amount": loan_amount,
+            "credit_history": credit_history,
+            "decision": decision,
+            "probability": bar_width,
+            "risk": "N/A"
+        })
 
 st.markdown('<div class="footer-note">LoanSense AI · Powered by Machine Learning · For internal assessment use only</div>', unsafe_allow_html=True)

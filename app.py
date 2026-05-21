@@ -23,7 +23,7 @@ st.set_page_config(
 )
 
 # ─────────────────────────────────────────────
-# SESSION STATE FIX
+# SESSION STATE
 # ─────────────────────────────────────────────
 
 if "page" not in st.session_state:
@@ -114,7 +114,7 @@ div[data-testid="column"]:nth-of-type(3) button:hover {
 
 .hero {
     background: linear-gradient(180deg, #111827 0%, #0c0f1a 100%);
-    padding: 28px 8px 24px;
+    padding: 28px 20px 24px;
     border-radius: 18px;
     margin-bottom: 20px;
     border: 1px solid #1e2540;
@@ -226,7 +226,7 @@ label {
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
-# MODEL
+# MODEL LOAD
 # ─────────────────────────────────────────────
 
 pipe = joblib.load("models/loan_model.pkl")
@@ -246,12 +246,14 @@ with col1:
     <div class="nav-logo">
         Loan<em>Sense</em>
     </div>
+
     <div class="nav-email">
         {email}
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
+
     if st.button("History", use_container_width=True):
 
         st.session_state.page = "dashboard"
@@ -259,6 +261,7 @@ with col2:
         st.rerun()
 
 with col3:
+
     if st.button("Logout", use_container_width=True):
 
         st.session_state.clear()
@@ -268,14 +271,16 @@ with col3:
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
-# HISTORY PAGE
+# DASHBOARD / HISTORY PAGE
 # ─────────────────────────────────────────────
 
 if st.session_state.page == "dashboard":
 
     show_dashboard(email)
 
-    if st.button("← Back"):
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    if st.button("← Back To Assessment"):
 
         st.session_state.page = "main"
 
@@ -318,7 +323,11 @@ st.markdown("""
 c1, c2 = st.columns(2)
 
 with c1:
-    gender = st.selectbox("Gender", ["Male", "Female"])
+
+    gender = st.selectbox(
+        "Gender",
+        ["Male", "Female"]
+    )
 
     education = st.selectbox(
         "Education",
@@ -326,6 +335,7 @@ with c1:
     )
 
 with c2:
+
     married = st.selectbox(
         "Marital Status",
         ["Yes", "No"]
@@ -342,7 +352,7 @@ with c2:
 st.markdown("</div>", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
-# FINANCIAL
+# FINANCIAL INFO
 # ─────────────────────────────────────────────
 
 st.markdown("""
@@ -353,6 +363,7 @@ st.markdown("""
 c3, c4 = st.columns(2)
 
 with c3:
+
     applicant_income = st.number_input(
         "Monthly Income (₹)",
         min_value=0,
@@ -361,6 +372,7 @@ with c3:
     )
 
 with c4:
+
     loan_amount = st.number_input(
         "Loan Amount (₹ thousands)",
         min_value=0,
@@ -372,9 +384,9 @@ credit_history = st.selectbox(
     "Credit History",
     [1, 0],
     format_func=lambda x:
-    "Clean — No defaults"
-    if x == 1
-    else "Defaulted — Past dues"
+    "Clean — No previous defaults"
+    if x == 1 else
+    "Defaulted — Past dues recorded"
 )
 
 st.markdown("</div>", unsafe_allow_html=True)
@@ -398,33 +410,78 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 if predict:
 
-    ratio = applicant_income / loan_amount if loan_amount > 0 else 0
+    ratio = round(
+        applicant_income / loan_amount,
+        2
+    ) if loan_amount > 0 else 0
 
     customer = {
+
         "ApplicantIncome": applicant_income,
+
         "LoanAmount": loan_amount,
+
         "Income_Loan_Ratio": ratio,
+
         "Credit_History": credit_history,
-        "Gender_Male": 1 if gender == "Male" else 0,
-        "Married_Yes": 1 if married == "Yes" else 0,
-        "Education_Not Graduate": 1 if education == "Not Graduate" else 0,
-        "Self_Employed_Yes": 1 if self_employed == "Yes" else 0
+
+        "Gender_Male":
+        1 if gender == "Male" else 0,
+
+        "Married_Yes":
+        1 if married == "Yes" else 0,
+
+        "Education_Not Graduate":
+        1 if education == "Not Graduate" else 0,
+
+        "Self_Employed_Yes":
+        1 if self_employed == "Yes" else 0
     }
 
     df = pd.DataFrame([customer])
 
+    # IMPORTANT FIX
     df = df.reindex(
         columns=pipe.feature_names_in_,
         fill_value=0
     )
 
-    prob = pipe.predict_proba(df)[0][1]
+    try:
 
-    decision = "APPROVED" if prob >= 0.5 else "REJECTED"
+        prob = pipe.predict_proba(df)[0][1]
+
+    except Exception as e:
+
+        st.error(f"Prediction Error: {e}")
+
+        st.stop()
+
+    # ───────── CUSTOM LOGIC ─────────
+
+    if ratio >= 2.0 and credit_history == 1:
+
+        prob = max(prob, 0.82)
+
+    elif ratio >= 1.0 and credit_history == 1:
+
+        prob = max(prob, 0.60)
+
+    elif ratio < 0.5 or credit_history == 0:
+
+        prob = min(prob, 0.35)
+
+    # ───────── DECISION ─────────
+
+    decision = (
+        "APPROVED"
+        if prob >= 0.5
+        else "REJECTED"
+    )
 
     confidence = round(prob * 100, 1)
 
-    # SAVE HISTORY
+    # ───────── SAVE HISTORY ─────────
+
     save_prediction(email, {
         "income": applicant_income,
         "loan_amount": loan_amount,
@@ -433,51 +490,73 @@ if predict:
         "probability": confidence
     })
 
+    # ───────── APPROVED ─────────
+
     if decision == "APPROVED":
 
         st.markdown(f"""
         <div class="result-box approved">
 
-        <div style="color:#4ade80;
+        <div style="
+        color:#4ade80;
         text-transform:uppercase;
         letter-spacing:2px;
         font-size:0.7rem;
         margin-bottom:8px;">
+
         Decision
+
         </div>
 
         <div class="result-title"
         style="color:#4ade80;">
+
         ✓ Loan Approved
+
         </div>
 
-        <div style="margin-top:8px;color:#86efac;">
+        <div style="
+        margin-top:8px;
+        color:#86efac;">
+
         Approval Confidence — {confidence}%
+
         </div>
 
         </div>
         """, unsafe_allow_html=True)
+
+    # ───────── REJECTED ─────────
 
     else:
 
         st.markdown(f"""
         <div class="result-box rejected">
 
-        <div style="color:#f87171;
+        <div style="
+        color:#f87171;
         text-transform:uppercase;
         letter-spacing:2px;
         font-size:0.7rem;
         margin-bottom:8px;">
+
         Decision
+
         </div>
 
         <div class="result-title"
         style="color:#f87171;">
+
         ✗ Loan Rejected
+
         </div>
 
-        <div style="margin-top:8px;color:#fca5a5;">
+        <div style="
+        margin-top:8px;
+        color:#fca5a5;">
+
         Approval Confidence — {confidence}%
+
         </div>
 
         </div>
@@ -489,7 +568,9 @@ if predict:
 
 st.markdown("""
 <div class="footer-note">
+
 LoanSense AI · Powered by Machine Learning ·
 For internal assessment use only
+
 </div>
 """, unsafe_allow_html=True)

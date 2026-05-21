@@ -10,6 +10,19 @@ if "user" not in st.session_state:
 
 st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="wide")
 
+# ── Query Params se page handle ──
+params = st.query_params
+if "page" in params:
+    if params["page"] == "logout":
+        st.session_state.clear()
+        st.query_params.clear()
+        st.rerun()
+    elif params["page"] == "dashboard":
+        st.session_state["page"] = "dashboard"
+    elif params["page"] == "main":
+        st.session_state["page"] = "main"
+        st.query_params.clear()
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=Geist:wght@300;400;500;600&display=swap');
@@ -22,7 +35,6 @@ html, body, [class*="css"], .stApp {
     color: #eef0f8 !important;
 }
 .stApp { background: #0c0f1a !important; }
-
 header[data-testid="stHeader"] { display: none !important; }
 
 section.main > div {
@@ -40,17 +52,35 @@ section.main > div {
 .nav {
     background: #080b14;
     border-bottom: 1px solid #161c30;
-    padding: 13px 22px;
+    padding: 11px 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: -1rem -1rem 0 -1rem;
 }
-.nav-logo { font-family: 'Fraunces', serif; font-size: 1.25rem; color: #eef0f8; font-weight: 600; letter-spacing: -0.5px; }
+.nav-left { display: flex; align-items: center; gap: 10px; }
+.nav-logo { font-family: 'Fraunces', serif; font-size: 1.2rem; color: #eef0f8; font-weight: 600; letter-spacing: -0.5px; }
 .nav-logo em { font-style: italic; color: #6c8fff; }
-.nav-right { display: flex; align-items: center; gap: 10px; }
 .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; }
 .nav-email { font-size: 0.72rem; color: #4a5580; }
+.nav-right { display: flex; align-items: center; gap: 8px; }
+.nav-btn {
+    background: transparent;
+    color: #4a5580;
+    border: 1px solid #1e2540;
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: 'Geist', sans-serif;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+.nav-btn:hover { color: #eef0f8; border-color: #6c8fff; background: #0f1528; }
+.nav-btn.danger:hover { color: #f87171; border-color: #4a1515; background: #150a0a; }
 
 .hero {
     background: linear-gradient(180deg, #0f1528 0%, #0c0f1a 100%);
@@ -96,26 +126,6 @@ div[data-testid="stNumberInput"] input {
     font-weight: 500 !important;
 }
 
-div[data-testid="stHorizontalBlock"] div.stButton > button {
-    background: transparent !important;
-    color: #4a5580 !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 8px !important;
-    padding: 5px 16px !important;
-    font-size: 0.68rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 1px !important;
-    width: auto !important;
-    min-width: 70px !important;
-    margin-top: 6px !important;
-    text-transform: uppercase !important;
-}
-div[data-testid="stHorizontalBlock"] div.stButton > button:hover {
-    color: #eef0f8 !important;
-    border-color: #6c8fff !important;
-    background: #0f1528 !important;
-}
-
 .predict-btn div.stButton > button {
     width: 100% !important;
     background: #6c8fff !important;
@@ -131,6 +141,23 @@ div[data-testid="stHorizontalBlock"] div.stButton > button:hover {
     margin-top: 0 !important;
 }
 .predict-btn div.stButton > button:hover { opacity: 0.85 !important; }
+
+.back-btn div.stButton > button {
+    background: transparent !important;
+    color: #4a5580 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    padding: 6px 16px !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    margin-top: 1rem !important;
+}
+.back-btn div.stButton > button:hover {
+    color: #eef0f8 !important;
+    border-color: #6c8fff !important;
+}
 
 .result-approved { background: #060f10; border: 1px solid #0d4429; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
 .result-rejected { background: #150a0a; border: 1px solid #4a1515; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
@@ -179,37 +206,32 @@ div[data-testid="stHorizontalBlock"] div.stButton > button:hover {
 """, unsafe_allow_html=True)
 
 pipe = joblib.load("models/loan_model.pkl")
+email = st.session_state.get("email", "")
 
-# ── Nav ──
+# ── Nav — HTML buttons with href ──
 st.markdown(f"""
 <div class="nav">
-    <div class="nav-logo">Loan<em>Sense</em></div>
-    <div class="nav-right">
+    <div class="nav-left">
+        <div class="nav-logo">Loan<em>Sense</em></div>
         <div class="nav-dot"></div>
-        <div class="nav-email">{st.session_state.get("email", "")}</div>
+        <div class="nav-email">{email}</div>
+    </div>
+    <div class="nav-right">
+        <a class="nav-btn" href="?page=dashboard">History</a>
+        <a class="nav-btn danger" href="?page=logout">Logout</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ── Nav Buttons ──
-col1, col2, col3 = st.columns([6, 1, 1])
-with col2:
-    if st.button("History"):
-        st.session_state["page"] = "dashboard"
-        st.rerun()
-with col3:
-    if st.button("Logout"):
-        st.session_state.clear()
-        st.rerun()
-
 # ── Dashboard Page ──
 if st.session_state.get("page") == "dashboard":
-    show_dashboard(st.session_state["email"])
-    col_a, col_b, col_c = st.columns([6, 1, 1])
-    with col_a:
-        if st.button("← Back to Assessment"):
-            st.session_state["page"] = "main"
-            st.rerun()
+    show_dashboard(email)
+    st.markdown('<div class="back-btn">', unsafe_allow_html=True)
+    if st.button("← Back to Assessment"):
+        st.session_state["page"] = "main"
+        st.query_params.clear()
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
 # ── Hero ──
@@ -348,7 +370,7 @@ if predict_clicked:
         </div>
         """, unsafe_allow_html=True)
 
-        save_prediction(st.session_state["email"], {
+        save_prediction(email, {
             "income": applicant_income,
             "loan_amount": loan_amount,
             "credit_history": credit_history,
@@ -385,7 +407,7 @@ if predict_clicked:
         </div>
         """, unsafe_allow_html=True)
 
-        save_prediction(st.session_state["email"], {
+        save_prediction(email, {
             "income": applicant_income,
             "loan_amount": loan_amount,
             "credit_history": credit_history,

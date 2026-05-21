@@ -10,19 +10,6 @@ if "user" not in st.session_state:
 
 st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="wide")
 
-# ── Query Params se page handle ──
-params = st.query_params
-if "page" in params:
-    if params["page"] == "logout":
-        st.session_state.clear()
-        st.query_params.clear()
-        st.rerun()
-    elif params["page"] == "dashboard":
-        st.session_state["page"] = "dashboard"
-    elif params["page"] == "main":
-        st.session_state["page"] = "main"
-        st.query_params.clear()
-
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=Geist:wght@300;400;500;600&display=swap');
@@ -63,24 +50,26 @@ section.main > div {
 .nav-logo em { font-style: italic; color: #6c8fff; }
 .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; }
 .nav-email { font-size: 0.72rem; color: #4a5580; }
-.nav-right { display: flex; align-items: center; gap: 8px; }
-.nav-btn {
-    background: transparent;
-    color: #4a5580;
-    border: 1px solid #1e2540;
-    border-radius: 8px;
-    padding: 5px 14px;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    font-family: 'Geist', sans-serif;
-    text-decoration: none;
-    transition: all 0.15s;
+
+.nav-pill div.stButton > button {
+    background: transparent !important;
+    color: #4a5580 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    padding: 5px 14px !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    width: auto !important;
+    margin-top: -52px !important;
+    float: right !important;
 }
-.nav-btn:hover { color: #eef0f8; border-color: #6c8fff; background: #0f1528; }
-.nav-btn.danger:hover { color: #f87171; border-color: #4a1515; background: #150a0a; }
+.nav-pill div.stButton > button:hover {
+    color: #eef0f8 !important;
+    border-color: #6c8fff !important;
+    background: #0f1528 !important;
+}
 
 .hero {
     background: linear-gradient(180deg, #0f1528 0%, #0c0f1a 100%);
@@ -139,6 +128,7 @@ div[data-testid="stNumberInput"] input {
     letter-spacing: 2px !important;
     text-transform: uppercase !important;
     margin-top: 0 !important;
+    float: none !important;
 }
 .predict-btn div.stButton > button:hover { opacity: 0.85 !important; }
 
@@ -153,6 +143,7 @@ div[data-testid="stNumberInput"] input {
     letter-spacing: 1px !important;
     text-transform: uppercase !important;
     margin-top: 1rem !important;
+    float: none !important;
 }
 .back-btn div.stButton > button:hover {
     color: #eef0f8 !important;
@@ -208,7 +199,7 @@ div[data-testid="stNumberInput"] input {
 pipe = joblib.load("models/loan_model.pkl")
 email = st.session_state.get("email", "")
 
-# ── Nav — HTML buttons with href ──
+# ── Nav ──
 st.markdown(f"""
 <div class="nav">
     <div class="nav-left">
@@ -216,20 +207,29 @@ st.markdown(f"""
         <div class="nav-dot"></div>
         <div class="nav-email">{email}</div>
     </div>
-    <div class="nav-right">
-        <a class="nav-btn" href="?page=dashboard">History</a>
-        <a class="nav-btn danger" href="?page=logout">Logout</a>
-    </div>
 </div>
 """, unsafe_allow_html=True)
+
+col_gap, col_hist, col_out = st.columns([5.5, 0.8, 0.8])
+with col_hist:
+    st.markdown('<div class="nav-pill">', unsafe_allow_html=True)
+    if st.button("History", key="nav_history"):
+        st.session_state["page"] = "dashboard"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+with col_out:
+    st.markdown('<div class="nav-pill">', unsafe_allow_html=True)
+    if st.button("Logout", key="nav_logout"):
+        st.session_state.clear()
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Dashboard Page ──
 if st.session_state.get("page") == "dashboard":
     show_dashboard(email)
     st.markdown('<div class="back-btn">', unsafe_allow_html=True)
-    if st.button("← Back to Assessment"):
+    if st.button("← Back to Assessment", key="back_btn"):
         st.session_state["page"] = "main"
-        st.query_params.clear()
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
@@ -276,7 +276,7 @@ st.markdown(f"""
 st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
-predict_clicked = st.button("RUN CREDIT ASSESSMENT →")
+predict_clicked = st.button("RUN CREDIT ASSESSMENT →", key="predict_btn")
 st.markdown('</div>', unsafe_allow_html=True)
 
 if predict_clicked:

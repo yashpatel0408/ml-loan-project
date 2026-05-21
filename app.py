@@ -36,39 +36,62 @@ section.main > div {
     padding-top: 0 !important;
 }
 
-.nav {
+.nav-bar {
     background: #080b14;
     border-bottom: 1px solid #161c30;
-    padding: 11px 22px;
+    padding: 0px 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin: -1rem -1rem 0 -1rem;
+    height: 52px;
 }
 .nav-left { display: flex; align-items: center; gap: 10px; }
 .nav-logo { font-family: 'Fraunces', serif; font-size: 1.2rem; color: #eef0f8; font-weight: 600; letter-spacing: -0.5px; }
 .nav-logo em { font-style: italic; color: #6c8fff; }
 .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; }
 .nav-email { font-size: 0.72rem; color: #4a5580; }
+.nav-right-placeholder { display: flex; align-items: center; gap: 8px; }
 
-.nav-pill div.stButton > button {
+div[data-testid="stHorizontalBlock"] {
+    background: #080b14 !important;
+    margin: -4px -1rem 0 -1rem !important;
+    padding: 8px 22px 10px 22px !important;
+    border-bottom: 1px solid #161c30 !important;
+    gap: 6px !important;
+    align-items: center !important;
+}
+
+div[data-testid="stHorizontalBlock"] > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+}
+
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) div.stButton > button,
+div[data-testid="stHorizontalBlock"] > div:nth-child(3) div.stButton > button {
     background: transparent !important;
     color: #4a5580 !important;
     border: 1px solid #1e2540 !important;
     border-radius: 8px !important;
-    padding: 5px 14px !important;
-    font-size: 0.68rem !important;
+    padding: 4px 14px !important;
+    font-size: 0.65rem !important;
     font-weight: 600 !important;
     letter-spacing: 1.5px !important;
     text-transform: uppercase !important;
     width: auto !important;
-    margin-top: -52px !important;
+    min-width: 80px !important;
     float: right !important;
+    transition: all 0.15s !important;
 }
-.nav-pill div.stButton > button:hover {
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) div.stButton > button:hover {
     color: #eef0f8 !important;
     border-color: #6c8fff !important;
     background: #0f1528 !important;
+}
+div[data-testid="stHorizontalBlock"] > div:nth-child(3) div.stButton > button:hover {
+    color: #f87171 !important;
+    border-color: #4a1515 !important;
+    background: #150a0a !important;
 }
 
 .hero {
@@ -127,7 +150,6 @@ div[data-testid="stNumberInput"] input {
     padding: 13px !important;
     letter-spacing: 2px !important;
     text-transform: uppercase !important;
-    margin-top: 0 !important;
     float: none !important;
 }
 .predict-btn div.stButton > button:hover { opacity: 0.85 !important; }
@@ -200,29 +222,23 @@ pipe = joblib.load("models/loan_model.pkl")
 email = st.session_state.get("email", "")
 
 # ── Nav ──
-st.markdown(f"""
-<div class="nav">
-    <div class="nav-left">
+col_logo, col_hist, col_logout = st.columns([5.2, 0.9, 0.9])
+with col_logo:
+    st.markdown(f"""
+    <div style="display:flex;align-items:center;gap:10px;height:100%;padding:8px 0">
         <div class="nav-logo">Loan<em>Sense</em></div>
         <div class="nav-dot"></div>
         <div class="nav-email">{email}</div>
     </div>
-</div>
-""", unsafe_allow_html=True)
-
-col_gap, col_hist, col_out = st.columns([5.5, 0.8, 0.8])
+    """, unsafe_allow_html=True)
 with col_hist:
-    st.markdown('<div class="nav-pill">', unsafe_allow_html=True)
     if st.button("History", key="nav_history"):
         st.session_state["page"] = "dashboard"
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-with col_out:
-    st.markdown('<div class="nav-pill">', unsafe_allow_html=True)
+with col_logout:
     if st.button("Logout", key="nav_logout"):
         st.session_state.clear()
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Dashboard Page ──
 if st.session_state.get("page") == "dashboard":

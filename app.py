@@ -4,573 +4,422 @@ import joblib
 from auth import show_auth_page
 from dashboard import save_prediction, show_dashboard
 
-# ─────────────────────────────────────────────
-# AUTH CHECK
-# ─────────────────────────────────────────────
-
 if "user" not in st.session_state:
     show_auth_page()
     st.stop()
 
-# ─────────────────────────────────────────────
-# PAGE CONFIG
-# ─────────────────────────────────────────────
-
-st.set_page_config(
-    page_title="LoanSense AI",
-    page_icon="🏦",
-    layout="wide"
-)
-
-# ─────────────────────────────────────────────
-# SESSION STATE
-# ─────────────────────────────────────────────
-
-if "page" not in st.session_state:
-    st.session_state.page = "main"
-
-# ─────────────────────────────────────────────
-# CSS
-# ─────────────────────────────────────────────
+st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="wide")
 
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=Geist:wght@300;400;500;600&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@300;600&family=Geist:wght@300;400;500;600&display=swap');
+*, *::before, *::after { box-sizing: border-box; }
 
-html, body, .stApp {
-    background: #0c0f1a !important;
-    color: #eef0f8 !important;
+html, body, [class*="css"], .stApp {
     font-family: 'Geist', sans-serif !important;
+    background-color: #0c0f1a !important;
+    color: #eef0f8 !important;
 }
+.stApp { background: #0c0f1a !important; }
+header[data-testid="stHeader"] { display: none !important; }
 
-header[data-testid="stHeader"] {
-    display: none !important;
+section.main > div {
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
 }
-
 .block-container {
-    max-width: 760px !important;
-    padding-top: 0rem !important;
+    max-width: 720px !important;
+    margin: 0 auto !important;
+    padding-top: 0 !important;
 }
 
-/* ───────── NAVBAR ───────── */
-
-.nav-wrapper {
+.nav-logo { font-family: 'Fraunces', serif; font-size: 1.2rem; color: #eef0f8; font-weight: 600; letter-spacing: -0.5px; }
+.nav-logo em { font-style: italic; color: #6c8fff; }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; display:inline-block; }
+.nav-email { font-size: 0.72rem; color: #4a5580; }
+.nav-wrap {
     background: #080b14;
     border-bottom: 1px solid #161c30;
-    padding: 12px 18px;
-    margin: -1rem -1rem 1.5rem -1rem;
+    margin: -1rem -1rem 0 -1rem;
+    padding: 10px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.nav-logo {
-    font-family: 'Fraunces', serif;
-    font-size: 1.25rem;
-    color: #eef0f8;
-    font-weight: 600;
+div[data-testid="stHorizontalBlock"] {
+    background: #080b14 !important;
+    border-bottom: 1px solid #161c30 !important;
+    margin: 0 -1rem 0 -1rem !important;
+    padding: 6px 16px 8px 16px !important;
+    gap: 4px !important;
 }
 
-.nav-logo em {
-    color: #6c8fff;
-    font-style: italic;
-}
-
-.nav-email {
-    font-size: 0.72rem;
-    color: #5b6487;
-}
-
-div[data-testid="column"]:nth-of-type(2) button,
-div[data-testid="column"]:nth-of-type(3) button {
-
-    width: 100% !important;
-    height: 42px !important;
-
-    background: transparent !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 10px !important;
-
-    color: #c7d2fe !important;
-
-    font-size: 0.72rem !important;
-    font-weight: 600 !important;
-
-    letter-spacing: 1px !important;
-    text-transform: uppercase !important;
-
+div[data-testid="stHorizontalBlock"] div.stButton > button {
     white-space: nowrap !important;
+    background: transparent !important;
+    color: #4a5580 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    padding: 5px 16px !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    width: 100% !important;
+    transition: all 0.15s !important;
 }
-
-div[data-testid="column"]:nth-of-type(2) button:hover {
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) div.stButton > button:hover {
+    color: #eef0f8 !important;
     border-color: #6c8fff !important;
-    color: white !important;
+    background: #0f1528 !important;
 }
-
-div[data-testid="column"]:nth-of-type(3) button:hover {
-    border-color: #ef4444 !important;
-    color: #ef4444 !important;
+div[data-testid="stHorizontalBlock"] > div:nth-child(3) div.stButton > button:hover {
+    color: #f87171 !important;
+    border-color: #4a1515 !important;
+    background: #150a0a !important;
 }
-
-/* ───────── HERO ───────── */
 
 .hero {
-    background: linear-gradient(180deg, #111827 0%, #0c0f1a 100%);
-    padding: 28px 20px 24px;
-    border-radius: 18px;
+    background: linear-gradient(180deg, #0f1528 0%, #0c0f1a 100%);
+    padding: 26px 4px 20px;
+    border-bottom: 1px solid #161c30;
     margin-bottom: 20px;
+}
+.hero-eyebrow { font-size: 0.62rem; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: #6c8fff; margin-bottom: 8px; }
+.hero-title { font-family: 'Fraunces', serif; font-size: 1.75rem; color: #eef0f8; font-weight: 300; line-height: 1.2; margin-bottom: 6px; }
+.hero-title strong { font-weight: 600; }
+.hero-sub { font-size: 0.8rem; color: #4a5580; font-weight: 400; line-height: 1.5; }
+
+.section {
+    background: #0f1528;
     border: 1px solid #1e2540;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+}
+.section-label { font-size: 0.65rem; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: #4a5580; margin-bottom: 16px; }
+
+div[data-testid="stSelectbox"] label,
+div[data-testid="stNumberInput"] label {
+    color: #4a5580 !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+}
+div[data-testid="stSelectbox"] > div > div {
+    background: #080b14 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    color: #c8cfe8 !important;
+    font-size: 0.875rem !important;
+}
+div[data-testid="stNumberInput"] input {
+    background: #080b14 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    color: #eef0f8 !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
 }
 
-.hero-small {
-    color: #6c8fff;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    font-size: 0.65rem;
-    font-weight: 600;
-}
-
-.hero-title {
-    font-family: 'Fraunces', serif;
-    font-size: 2rem;
-    margin-top: 10px;
-    line-height: 1.2;
-}
-
-.hero-sub {
-    color: #667085;
-    margin-top: 10px;
-    font-size: 0.85rem;
-}
-
-/* ───────── CARD ───────── */
-
-.card {
-    background: #111827;
-    border: 1px solid #1e2540;
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 18px;
-}
-
-.card-title {
-    color: #6b7280;
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    font-weight: 600;
-}
-
-/* ───────── INPUTS ───────── */
-
-label {
-    color: #9ca3af !important;
-}
-
-.stSelectbox div[data-baseweb="select"],
-.stNumberInput input {
-    background: #0b1220 !important;
-    border: 1px solid #1e293b !important;
-    border-radius: 10px !important;
-    color: white !important;
-}
-
-/* ───────── BUTTON ───────── */
-
-.predict-btn button {
+.predict-btn div.stButton > button {
     width: 100% !important;
     background: #6c8fff !important;
-    color: #0c0f1a !important;
+    color: #080b14 !important;
+    font-family: 'Geist', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
     border: none !important;
-    border-radius: 12px !important;
-    height: 52px !important;
-    font-weight: 700 !important;
+    border-radius: 10px !important;
+    padding: 13px !important;
     letter-spacing: 2px !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+}
+.predict-btn div.stButton > button:hover { opacity: 0.85 !important; }
+
+.back-btn div.stButton > button {
+    background: transparent !important;
+    color: #4a5580 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    padding: 6px 16px !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    margin-top: 1rem !important;
+    white-space: nowrap !important;
+}
+.back-btn div.stButton > button:hover {
+    color: #eef0f8 !important;
+    border-color: #6c8fff !important;
 }
 
-.predict-btn button:hover {
-    opacity: 0.9;
+.result-approved { background: #060f10; border: 1px solid #0d4429; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
+.result-rejected { background: #150a0a; border: 1px solid #4a1515; border-radius: 14px; padding: 20px 22px; margin-top: 14px; }
+.result-main { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 600; margin-bottom: 4px; line-height: 1; }
+
+.risk-block {
+    background: #0f1528;
+    border: 1px solid #1e2540;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: start;
 }
+.risk-left { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.risk-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.risk-level-tag { font-size: 0.58rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+.risk-right-eyebrow { font-size: 0.62rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #4a5580; margin-bottom: 4px; }
+.risk-right-title { font-family: 'Fraunces', serif; font-size: 1.15rem; color: #eef0f8; font-weight: 600; margin-bottom: 5px; }
+.risk-right-desc { font-size: 0.78rem; color: #6b7280; line-height: 1.5; margin-bottom: 10px; }
+.risk-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font-size: 0.7rem; font-weight: 500; padding: 4px 10px; border-radius: 6px; }
 
-/* ───────── RESULT ───────── */
+.suggestion-block { background: #0f1528; border: 1px solid #1e2540; border-radius: 14px; padding: 18px 20px; margin-top: 12px; }
+.suggestion-eyebrow { font-size: 0.62rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #f87171; margin-bottom: 12px; }
+.suggestion-item { font-size: 0.82rem; color: #9ca3af; font-weight: 400; padding: 6px 0; border-bottom: 1px solid #161c30; }
+.suggestion-item:last-child { border-bottom: none; }
 
-.result-box {
-    border-radius: 18px;
-    padding: 22px;
-    margin-top: 18px;
+.ratio-box {
+    background: #080b14;
+    border: 1px solid #1e2540;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+.ratio-label { font-size: 0.68rem; font-weight: 600; color: #4a5580; text-transform: uppercase; letter-spacing: 0.8px; }
+.ratio-value { font-size: 0.9rem; font-weight: 600; }
 
-.approved {
-    background: #07130c;
-    border: 1px solid #14532d;
-}
-
-.rejected {
-    background: #160809;
-    border: 1px solid #7f1d1d;
-}
-
-.result-title {
-    font-size: 2rem;
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-}
-
-.footer-note {
-    text-align: center;
-    color: #394150;
-    font-size: 0.72rem;
-    margin-top: 30px;
-}
-
+.footer-note { text-align: center; font-size: 0.7rem; color: #2a3050; margin-top: 18px; padding-top: 14px; border-top: 1px solid #161c30; }
 </style>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# MODEL LOAD
-# ─────────────────────────────────────────────
-
 pipe = joblib.load("models/loan_model.pkl")
+email = st.session_state.get("email", "")
 
-email = st.session_state.get("email", "user@gmail.com")
+# ── Nav Logo Row ──
+st.markdown(f"""
+<div class="nav-wrap">
+    <div class="nav-logo">Loan<em>Sense</em></div>
+    <div class="nav-dot"></div>
+    <div class="nav-email">{email}</div>
+</div>
+""", unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# NAVBAR
-# ─────────────────────────────────────────────
-
-st.markdown('<div class="nav-wrapper">', unsafe_allow_html=True)
-
-col1, col2, col3 = st.columns([6, 1.5, 1.5])
-
-with col1:
-    st.markdown(f"""
-    <div class="nav-logo">
-        Loan<em>Sense</em>
-    </div>
-
-    <div class="nav-email">
-        {email}
-    </div>
-    """, unsafe_allow_html=True)
-
-with col2:
-
-    if st.button("History", use_container_width=True):
-
-        st.session_state.page = "dashboard"
-
+# ── Nav Buttons Row ──
+col_gap, col_hist, col_out = st.columns([5, 1, 1])
+with col_hist:
+    if st.button("History", key="nav_history"):
+        st.session_state["page"] = "dashboard"
         st.rerun()
-
-with col3:
-
-    if st.button("Logout", use_container_width=True):
-
+with col_out:
+    if st.button("Logout", key="nav_logout"):
         st.session_state.clear()
-
         st.rerun()
 
-st.markdown('</div>', unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────
-# DASHBOARD / HISTORY PAGE
-# ─────────────────────────────────────────────
-
-if st.session_state.page == "dashboard":
-
+# ── Dashboard Page ──
+if st.session_state.get("page") == "dashboard":
     show_dashboard(email)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    if st.button("← Back To Assessment"):
-
-        st.session_state.page = "main"
-
+    st.markdown('<div class="back-btn">', unsafe_allow_html=True)
+    if st.button("← Back", key="back_btn"):
+        st.session_state["page"] = "main"
         st.rerun()
-
+    st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
-# ─────────────────────────────────────────────
-# HERO
-# ─────────────────────────────────────────────
-
+# ── Hero ──
 st.markdown("""
 <div class="hero">
-
-<div class="hero-small">
-Credit Assessment Portal
-</div>
-
-<div class="hero-title">
-Loan <strong>Eligibility</strong><br>
-Assessment
-</div>
-
-<div class="hero-sub">
-Enter applicant details — instant AI-driven decision with credit risk profile
-</div>
-
+    <div class="hero-eyebrow">Credit Assessment Portal</div>
+    <div class="hero-title">Loan <strong>Eligibility</strong><br>Assessment</div>
+    <div class="hero-sub">Enter applicant details — instant AI-driven decision with credit risk profile</div>
 </div>
 """, unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# PERSONAL INFO
-# ─────────────────────────────────────────────
-
-st.markdown("""
-<div class="card">
-<div class="card-title">Personal Information</div>
-""", unsafe_allow_html=True)
-
-c1, c2 = st.columns(2)
-
-with c1:
-
-    gender = st.selectbox(
-        "Gender",
-        ["Male", "Female"]
-    )
-
-    education = st.selectbox(
-        "Education",
-        ["Graduate", "Not Graduate"]
-    )
-
-with c2:
-
-    married = st.selectbox(
-        "Marital Status",
-        ["Yes", "No"]
-    )
-
-    self_employed = st.selectbox(
-        "Employment Type",
-        ["No", "Yes"],
-        format_func=lambda x:
-        "Salaried" if x == "No"
-        else "Self Employed"
-    )
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────
-# FINANCIAL INFO
-# ─────────────────────────────────────────────
-
-st.markdown("""
-<div class="card">
-<div class="card-title">Financial Details</div>
-""", unsafe_allow_html=True)
-
-c3, c4 = st.columns(2)
-
-with c3:
-
-    applicant_income = st.number_input(
-        "Monthly Income (₹)",
-        min_value=0,
-        value=5000,
-        step=500
-    )
-
-with c4:
-
-    loan_amount = st.number_input(
-        "Loan Amount (₹ thousands)",
-        min_value=0,
-        value=120,
-        step=10
-    )
-
-credit_history = st.selectbox(
-    "Credit History",
-    [1, 0],
-    format_func=lambda x:
-    "Clean — No previous defaults"
-    if x == 1 else
-    "Defaulted — Past dues recorded"
-)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────
-# PREDICT BUTTON
-# ─────────────────────────────────────────────
-
-st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
-
-predict = st.button(
-    "RUN CREDIT ASSESSMENT →",
-    use_container_width=True
-)
-
+# ── Personal Info ──
+st.markdown('<div class="section"><div class="section-label">Personal Information</div>', unsafe_allow_html=True)
+col1, col2 = st.columns(2)
+with col1:
+    gender = st.selectbox("Gender", ["Male", "Female"])
+    education = st.selectbox("Education", ["Graduate", "Not Graduate"])
+with col2:
+    married = st.selectbox("Marital Status", ["Yes", "No"])
+    self_employed = st.selectbox("Employment Type", ["No", "Yes"], format_func=lambda x: "Salaried" if x == "No" else "Self Employed")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# ─────────────────────────────────────────────
-# PREDICTION
-# ─────────────────────────────────────────────
+# ── Financial Details ──
+st.markdown('<div class="section"><div class="section-label">Financial Details</div>', unsafe_allow_html=True)
+col3, col4 = st.columns(2)
+with col3:
+    applicant_income = st.number_input("Monthly Income (₹)", min_value=0, value=5000, step=500)
+with col4:
+    loan_amount = st.number_input("Loan Amount (₹ thousands)", min_value=0, value=120, step=10)
 
-if predict:
+credit_history = st.selectbox("Credit History", [1, 0],
+    format_func=lambda x: "Clean — No previous defaults" if x == 1 else "Defaulted — Past dues recorded")
 
-    ratio = round(
-        applicant_income / loan_amount,
-        2
-    ) if loan_amount > 0 else 0
-
-    customer = {
-
-        "ApplicantIncome": applicant_income,
-
-        "LoanAmount": loan_amount,
-
-        "Income_Loan_Ratio": ratio,
-
-        "Credit_History": credit_history,
-
-        "Gender_Male":
-        1 if gender == "Male" else 0,
-
-        "Married_Yes":
-        1 if married == "Yes" else 0,
-
-        "Education_Not Graduate":
-        1 if education == "Not Graduate" else 0,
-
-        "Self_Employed_Yes":
-        1 if self_employed == "Yes" else 0
-    }
-
-    df = pd.DataFrame([customer])
-
-    # IMPORTANT FIX
-    df = df.reindex(
-        columns=pipe.feature_names_in_,
-        fill_value=0
-    )
-
-    try:
-
-        prob = pipe.predict_proba(df)[0][1]
-
-    except Exception as e:
-
-        st.error(f"Prediction Error: {e}")
-
-        st.stop()
-
-    # ───────── CUSTOM LOGIC ─────────
-
-    if ratio >= 2.0 and credit_history == 1:
-
-        prob = max(prob, 0.82)
-
-    elif ratio >= 1.0 and credit_history == 1:
-
-        prob = max(prob, 0.60)
-
-    elif ratio < 0.5 or credit_history == 0:
-
-        prob = min(prob, 0.35)
-
-    # ───────── DECISION ─────────
-
-    decision = (
-        "APPROVED"
-        if prob >= 0.5
-        else "REJECTED"
-    )
-
-    confidence = round(prob * 100, 1)
-
-    # ───────── SAVE HISTORY ─────────
-
-    save_prediction(email, {
-        "income": applicant_income,
-        "loan_amount": loan_amount,
-        "credit_history": credit_history,
-        "decision": decision,
-        "probability": confidence
-    })
-
-    # ───────── APPROVED ─────────
-
-    if decision == "APPROVED":
-
-        st.markdown(f"""
-        <div class="result-box approved">
-
-        <div style="
-        color:#4ade80;
-        text-transform:uppercase;
-        letter-spacing:2px;
-        font-size:0.7rem;
-        margin-bottom:8px;">
-
-        Decision
-
-        </div>
-
-        <div class="result-title"
-        style="color:#4ade80;">
-
-        ✓ Loan Approved
-
-        </div>
-
-        <div style="
-        margin-top:8px;
-        color:#86efac;">
-
-        Approval Confidence — {confidence}%
-
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-    # ───────── REJECTED ─────────
-
-    else:
-
-        st.markdown(f"""
-        <div class="result-box rejected">
-
-        <div style="
-        color:#f87171;
-        text-transform:uppercase;
-        letter-spacing:2px;
-        font-size:0.7rem;
-        margin-bottom:8px;">
-
-        Decision
-
-        </div>
-
-        <div class="result-title"
-        style="color:#f87171;">
-
-        ✗ Loan Rejected
-
-        </div>
-
-        <div style="
-        margin-top:8px;
-        color:#fca5a5;">
-
-        Approval Confidence — {confidence}%
-
-        </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────
-# FOOTER
-# ─────────────────────────────────────────────
-
-st.markdown("""
-<div class="footer-note">
-
-LoanSense AI · Powered by Machine Learning ·
-For internal assessment use only
-
+ratio = round(applicant_income / loan_amount, 2) if loan_amount > 0 else 0
+ratio_color = "#34d399" if ratio >= 2.0 else "#fcd34d" if ratio >= 1.0 else "#f87171"
+st.markdown(f"""
+<div class="ratio-box">
+    <div class="ratio-label">Income / Loan Ratio</div>
+    <div class="ratio-value" style="color:{ratio_color}">{ratio}x</div>
 </div>
 """, unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="predict-btn">', unsafe_allow_html=True)
+predict_clicked = st.button("RUN CREDIT ASSESSMENT →", key="predict_btn")
+st.markdown('</div>', unsafe_allow_html=True)
+
+if predict_clicked:
+    new_customer = {
+        "ApplicantIncome": applicant_income,
+        "LoanAmount": loan_amount,
+        "Income_Loan_Ratio": ratio,
+        "Credit_History": credit_history,
+        "Gender_Male": 1 if gender == "Male" else 0,
+        "Married_Yes": 1 if married == "Yes" else 0,
+        "Education_Not Graduate": 1 if education == "Not Graduate" else 0,
+        "Self_Employed_Yes": 1 if self_employed == "Yes" else 0
+    }
+
+    new_df = pd.DataFrame([new_customer])
+    new_df = new_df.reindex(columns=pipe.feature_names_in_, fill_value=0)
+
+    prob = pipe.predict_proba(new_df)[0][1]
+
+    if ratio >= 2.0 and credit_history == 1:
+        prob = max(prob, 0.82)
+    elif ratio >= 1.0 and credit_history == 1:
+        prob = max(prob, 0.60)
+    elif ratio < 0.5 or credit_history == 0:
+        prob = min(prob, 0.35)
+
+    decision = "APPROVED" if prob >= 0.5 else "REJECTED"
+    bar_width = round(prob * 100, 1)
+    risk_title = "N/A"
+
+    if decision == "APPROVED":
+        st.markdown(f"""
+        <div class="result-approved">
+            <div style="font-size:0.62rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#34d399;margin-bottom:8px">Decision</div>
+            <div class="result-main" style="color:#34d399">✓ Loan Approved</div>
+            <div style="font-size:0.78rem;color:#34d399;opacity:0.7">Approval Confidence — {bar_width}%</div>
+            <div style="margin-top:14px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                    <span style="font-size:0.7rem;color:#4a5580;font-weight:500">Confidence Score</span>
+                    <strong style="font-size:0.7rem;color:#34d399">{bar_width}%</strong>
+                </div>
+                <div style="background:#0d1a12;border-radius:999px;height:5px;overflow:hidden">
+                    <div style="background:linear-gradient(90deg,#059669,#34d399);height:100%;width:{bar_width}%;border-radius:999px"></div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if prob >= 0.80:
+            circle_bg, circle_border, tag_color, risk_title, risk_desc, pills, pill_bg, pill_color, pill_border = (
+                "#0f1f0f", "#15803d", "#15803d",
+                "Low Risk Profile",
+                "Strong repayment profile. High confidence in timely loan servicing throughout tenure.",
+                ["Standard interest rate", "No collateral needed", "Annual review"],
+                "#0d1a12", "#34d399", "#0d4429"
+            )
+            emoji = "🟢"
+        elif prob >= 0.60:
+            circle_bg, circle_border, tag_color, risk_title, risk_desc, pills, pill_bg, pill_color, pill_border = (
+                "#1a1200", "#b45309", "#d97706",
+                "Medium Risk Profile",
+                "Moderate repayment profile. Loan serviceable with standard monitoring through tenure.",
+                ["+0.5% risk premium", "Quarterly review", "No collateral needed"],
+                "#1a1200", "#fcd34d", "#78350f"
+            )
+            emoji = "🟡"
+        else:
+            circle_bg, circle_border, tag_color, risk_title, risk_desc, pills, pill_bg, pill_color, pill_border = (
+                "#1a0a0a", "#b91c1c", "#ef4444",
+                "High Risk Profile",
+                "Weak repayment profile. Elevated risk — close monitoring and security required.",
+                ["+1.5% risk premium", "Monthly review", "Collateral required"],
+                "#1a0a0a", "#f87171", "#7f1d1d"
+            )
+            emoji = "🔴"
+
+        pills_html = "".join([f'<div class="pill" style="background:{pill_bg};color:{pill_color};border:1px solid {pill_border}">{p}</div>' for p in pills])
+
+        st.markdown(f"""
+        <div class="risk-block">
+            <div class="risk-left">
+                <div class="risk-circle" style="background:{circle_bg};border:1.5px solid {circle_border}">{emoji}</div>
+                <div class="risk-level-tag" style="color:{tag_color}">{risk_title.split()[0]}</div>
+            </div>
+            <div>
+                <div class="risk-right-eyebrow">Credit Risk Assignment</div>
+                <div class="risk-right-title">{risk_title}</div>
+                <div class="risk-right-desc">{risk_desc}</div>
+                <div class="risk-pills">{pills_html}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        save_prediction(email, {
+            "income": applicant_income,
+            "loan_amount": loan_amount,
+            "credit_history": credit_history,
+            "decision": decision,
+            "probability": bar_width,
+            "risk": risk_title
+        })
+
+    else:
+        st.markdown(f"""
+        <div class="result-rejected">
+            <div style="font-size:0.62rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#f87171;margin-bottom:8px">Decision</div>
+            <div class="result-main" style="color:#f87171">✗ Loan Rejected</div>
+            <div style="font-size:0.78rem;color:#f87171;opacity:0.7">Approval Confidence — {bar_width}%</div>
+            <div style="margin-top:14px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                    <span style="font-size:0.7rem;color:#4a5580;font-weight:500">Confidence Score</span>
+                    <strong style="font-size:0.7rem;color:#f87171">{bar_width}%</strong>
+                </div>
+                <div style="background:#1a0a0a;border-radius:999px;height:5px;overflow:hidden">
+                    <div style="background:linear-gradient(90deg,#991b1b,#f87171);height:100%;width:{bar_width}%;border-radius:999px"></div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="suggestion-block">
+            <div class="suggestion-eyebrow">Recommendations to Improve Eligibility</div>
+            <div class="suggestion-item">→ Maintain a clean credit record for at least 6 months</div>
+            <div class="suggestion-item">→ Increase monthly income or add a co-applicant</div>
+            <div class="suggestion-item">→ Reduce the requested loan amount</div>
+            <div class="suggestion-item">→ Reapply after addressing the above factors</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        save_prediction(email, {
+            "income": applicant_income,
+            "loan_amount": loan_amount,
+            "credit_history": credit_history,
+            "decision": decision,
+            "probability": bar_width,
+            "risk": "N/A"
+        })
+
+st.markdown('<div class="footer-note">LoanSense AI · Powered by Machine Learning · For internal assessment use only</div>', unsafe_allow_html=True)

@@ -40,8 +40,41 @@ section.main > div {
 [data-testid="stSidebar"] {
     background: #080b14 !important;
     border-right: 1px solid #161c30 !important;
+    min-width: 220px !important;
 }
 [data-testid="stSidebar"] * { color: #eef0f8 !important; }
+
+/* Fix sidebar collapse toggle button visibility */
+[data-testid="stSidebarCollapseButton"] {
+    background: #0f1528 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    color: #6c8fff !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+[data-testid="stSidebarCollapseButton"]:hover {
+    background: #161c30 !important;
+    border-color: #6c8fff !important;
+}
+[data-testid="stSidebarCollapseButton"] svg {
+    fill: #6c8fff !important;
+    stroke: #6c8fff !important;
+}
+
+/* Sidebar expand button (when sidebar is collapsed) */
+[data-testid="stSidebarOpenButton"] {
+    background: #0f1528 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 8px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+[data-testid="stSidebarOpenButton"] svg {
+    fill: #6c8fff !important;
+    stroke: #6c8fff !important;
+}
+
 .sidebar-logo {
     font-family: 'Fraunces', serif;
     font-size: 1.3rem;
@@ -52,6 +85,18 @@ section.main > div {
 .sidebar-logo em { font-style: italic; color: #6c8fff; }
 .sidebar-email { font-size: 0.72rem; color: #4a5580; margin-bottom: 2rem; }
 .sidebar-divider { height: 1px; background: #1e2540; margin: 1rem 0; }
+
+/* ── Sidebar buttons: proper stacking alignment ── */
+[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+}
+
+[data-testid="stSidebar"] div.stButton {
+    width: 100% !important;
+    display: block !important;
+}
 
 [data-testid="stSidebar"] div.stButton > button {
     width: 100% !important;
@@ -66,13 +111,16 @@ section.main > div {
     text-transform: uppercase !important;
     text-align: left !important;
     margin-bottom: 6px !important;
+    display: block !important;
 }
 [data-testid="stSidebar"] div.stButton > button:hover {
     color: #eef0f8 !important;
     border-color: #6c8fff !important;
     background: #0f1528 !important;
 }
-[data-testid="stSidebar"] div.stButton:last-child > button:hover {
+
+/* Logout button — last stButton in sidebar gets red hover */
+[data-testid="stSidebar"] div.stButton:last-of-type > button:hover {
     color: #f87171 !important;
     border-color: #4a1515 !important;
     background: #150a0a !important;
@@ -179,13 +227,11 @@ with st.sidebar:
     <div class="sidebar-divider"></div>
     """, unsafe_allow_html=True)
 
-    if st.button("📋 Loan History"):
+    if st.button("📋  Loan History", key="sidebar_history_btn"):
         st.session_state["page"] = "dashboard"
         st.rerun()
 
-    st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
-
-    if st.button("🚪 Logout"):
+    if st.button("🚪  Logout", key="sidebar_logout_btn"):
         st.session_state.clear()
         st.rerun()
 

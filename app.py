@@ -36,12 +36,30 @@ section.main > div {
     padding-top: 0 !important;
 }
 
+/* ── Sidebar Toggle Button Visible ── */
+button[data-testid="collapsedControl"] {
+    display: flex !important;
+    background: #6c8fff !important;
+    color: #080b14 !important;
+    border-radius: 0 8px 8px 0 !important;
+    border: none !important;
+    width: 28px !important;
+    height: 40px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+}
+button[data-testid="collapsedControl"] svg {
+    fill: #080b14 !important;
+}
+
 /* ── Sidebar ── */
 [data-testid="stSidebar"] {
     background: #080b14 !important;
     border-right: 1px solid #161c30 !important;
+    min-width: 220px !important;
+    max-width: 220px !important;
 }
-[data-testid="stSidebar"] * { color: #eef0f8 !important; }
+
 .sidebar-logo {
     font-family: 'Fraunces', serif;
     font-size: 1.3rem;
@@ -50,8 +68,8 @@ section.main > div {
     margin-bottom: 4px;
 }
 .sidebar-logo em { font-style: italic; color: #6c8fff; }
-.sidebar-email { font-size: 0.72rem; color: #4a5580; margin-bottom: 2rem; }
-.sidebar-divider { height: 1px; background: #1e2540; margin: 1rem 0; }
+.sidebar-email { font-size: 0.72rem; color: #4a5580; margin-bottom: 1.5rem; }
+.sidebar-divider { height: 1px; background: #1e2540; margin: 10px 0; }
 
 [data-testid="stSidebar"] div.stButton > button {
     width: 100% !important;
@@ -59,26 +77,34 @@ section.main > div {
     color: #4a5580 !important;
     border: 1px solid #1e2540 !important;
     border-radius: 8px !important;
-    padding: 8px 16px !important;
+    padding: 10px 16px !important;
     font-size: 0.72rem !important;
     font-weight: 600 !important;
-    letter-spacing: 1px !important;
+    letter-spacing: 1.5px !important;
     text-transform: uppercase !important;
-    text-align: left !important;
-    margin-bottom: 6px !important;
+    text-align: center !important;
+    margin-bottom: 8px !important;
+    height: 40px !important;
+    white-space: nowrap !important;
+    transition: all 0.15s !important;
 }
-[data-testid="stSidebar"] div.stButton > button:hover {
+[data-testid="stSidebar"] div.stButton:first-of-type > button:hover {
     color: #eef0f8 !important;
     border-color: #6c8fff !important;
     background: #0f1528 !important;
 }
-[data-testid="stSidebar"] div.stButton:last-child > button:hover {
+[data-testid="stSidebar"] div.stButton:last-of-type > button {
+    color: #4a5580 !important;
+    border-color: #1e2540 !important;
+    margin-top: 8px !important;
+}
+[data-testid="stSidebar"] div.stButton:last-of-type > button:hover {
     color: #f87171 !important;
     border-color: #4a1515 !important;
     background: #150a0a !important;
 }
 
-/* ── Nav ── */
+/* ── Navbar ── */
 .navbar {
     background: #080b14;
     border-bottom: 1px solid #161c30;
@@ -87,12 +113,10 @@ section.main > div {
     height: 52px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
 }
-.navbar-left { display: flex; align-items: center; gap: 10px; }
 .nav-logo { font-family: 'Fraunces', serif; font-size: 1.2rem; color: #eef0f8; font-weight: 600; letter-spacing: -0.5px; }
 .nav-logo em { font-style: italic; color: #6c8fff; }
-.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; margin: 0 10px; }
 .nav-email { font-size: 0.72rem; color: #4a5580; }
 
 .hero {
@@ -129,6 +153,7 @@ div[data-testid="stNumberInput"] input {
     font-family: 'Geist', sans-serif !important; font-weight: 600 !important;
     font-size: 0.8rem !important; border: none !important; border-radius: 10px !important;
     padding: 13px !important; letter-spacing: 2px !important; text-transform: uppercase !important;
+    height: auto !important; margin-bottom: 0 !important;
 }
 .predict-btn div.stButton > button:hover { opacity: 0.85 !important; }
 
@@ -138,6 +163,7 @@ div[data-testid="stNumberInput"] input {
     padding: 6px 16px !important; font-size: 0.68rem !important;
     font-weight: 600 !important; letter-spacing: 1px !important;
     text-transform: uppercase !important; margin-top: 1rem !important;
+    height: auto !important;
 }
 .back-btn div.stButton > button:hover { color: #eef0f8 !important; border-color: #6c8fff !important; }
 
@@ -179,24 +205,23 @@ with st.sidebar:
     <div class="sidebar-divider"></div>
     """, unsafe_allow_html=True)
 
-    if st.button("📋 Loan History"):
+    if st.button("History", key="nav_history"):
         st.session_state["page"] = "dashboard"
         st.rerun()
 
+    st.markdown('<div style="flex:1"></div>', unsafe_allow_html=True)
     st.markdown('<div class="sidebar-divider"></div>', unsafe_allow_html=True)
 
-    if st.button("🚪 Logout"):
+    if st.button("Logout", key="nav_logout"):
         st.session_state.clear()
         st.rerun()
 
 # ── Navbar ──
 st.markdown(f"""
 <div class="navbar">
-    <div class="navbar-left">
-        <div class="nav-logo">Loan<em>Sense</em></div>
-        <div class="nav-dot"></div>
-        <div class="nav-email">{email}</div>
-    </div>
+    <div class="nav-logo">Loan<em>Sense</em></div>
+    <div class="nav-dot"></div>
+    <div class="nav-email">{email}</div>
 </div>
 """, unsafe_allow_html=True)
 

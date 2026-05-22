@@ -8,7 +8,7 @@ if "user" not in st.session_state:
     show_auth_page()
     st.stop()
 
-st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="wide")
 
 st.markdown("""
 <style>
@@ -24,124 +24,31 @@ html, body, [class*="css"], .stApp {
 .stApp { background: #0c0f1a !important; }
 header[data-testid="stHeader"] { display: none !important; }
 
+/* Hide sidebar completely */
+[data-testid="stSidebar"] { display: none !important; }
+[data-testid="stSidebarCollapseButton"] { display: none !important; }
+[data-testid="stSidebarOpenButton"] { display: none !important; }
+[data-testid="collapsedControl"] { display: none !important; }
+
 section.main > div {
-    max-width: 720px !important;
+    max-width: 760px !important;
     margin: 0 auto !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
 }
 .block-container {
-    max-width: 720px !important;
+    max-width: 760px !important;
     margin: 0 auto !important;
     padding-top: 0 !important;
 }
 
-/* ── Sidebar base ── */
-[data-testid="stSidebar"] {
-    background: #080b14 !important;
-    border-right: 1px solid #161c30 !important;
-    min-width: 240px !important;
-    width: 240px !important;
-}
-[data-testid="stSidebar"] > div:first-child {
-    background: #080b14 !important;
-    padding-top: 1.5rem !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-}
-[data-testid="stSidebar"] * { color: #eef0f8 !important; }
-
-/* ── Force sidebar collapse/expand arrow to be visible ── */
-button[data-testid="stSidebarCollapseButton"],
-button[data-testid="stSidebarOpenButton"],
-[data-testid="collapsedControl"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    background: #0f1528 !important;
-    border: 1px solid #2a3460 !important;
-    border-radius: 0 8px 8px 0 !important;
-    width: 28px !important;
-    height: 48px !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    z-index: 9999 !important;
-    position: fixed !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-}
-button[data-testid="stSidebarCollapseButton"] svg,
-button[data-testid="stSidebarOpenButton"] svg,
-[data-testid="collapsedControl"] svg {
-    fill: #6c8fff !important;
-    stroke: #6c8fff !important;
-    width: 16px !important;
-    height: 16px !important;
-    display: block !important;
-}
-/* When sidebar is open, collapse button sits at sidebar edge */
-button[data-testid="stSidebarCollapseButton"] {
-    left: 240px !important;
-}
-/* When sidebar is closed, open button sits at left edge */
-button[data-testid="stSidebarOpenButton"],
-[data-testid="collapsedControl"] {
-    left: 0px !important;
-}
-
-.sidebar-logo {
-    font-family: 'Fraunces', serif;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #eef0f8;
-    margin-bottom: 4px;
-}
-.sidebar-logo em { font-style: italic; color: #6c8fff; }
-.sidebar-email { font-size: 0.72rem; color: #4a5580; margin-bottom: 1.5rem; word-break: break-all; }
-.sidebar-divider { height: 1px; background: #1e2540; margin: 0.75rem 0 1rem 0; }
-
-/* ── Sidebar buttons: stacked, full-width ── */
-[data-testid="stSidebar"] div.stButton {
-    width: 100% !important;
-    margin-bottom: 6px !important;
-}
-[data-testid="stSidebar"] div.stButton > button {
-    width: 100% !important;
-    background: transparent !important;
-    color: #8892b0 !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 8px !important;
-    padding: 9px 14px !important;
-    font-size: 0.75rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.8px !important;
-    text-transform: uppercase !important;
-    text-align: left !important;
-    transition: all 0.15s ease !important;
-}
-[data-testid="stSidebar"] div.stButton > button:hover {
-    color: #eef0f8 !important;
-    border-color: #6c8fff !important;
-    background: #0f1528 !important;
-}
-[data-testid="stSidebar"] div.stButton:last-of-type > button {
-    color: #6b4545 !important;
-    border-color: #2a1515 !important;
-}
-[data-testid="stSidebar"] div.stButton:last-of-type > button:hover {
-    color: #f87171 !important;
-    border-color: #4a1515 !important;
-    background: #150a0a !important;
-}
-
-/* ── Nav ── */
+/* ── Navbar ── */
 .navbar {
     background: #080b14;
     border-bottom: 1px solid #161c30;
     margin: -1rem -1rem 0 -1rem;
     padding: 0 22px;
-    height: 52px;
+    height: 54px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -151,6 +58,44 @@ button[data-testid="stSidebarOpenButton"],
 .nav-logo em { font-style: italic; color: #6c8fff; }
 .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; }
 .nav-email { font-size: 0.72rem; color: #4a5580; }
+.navbar-right { display: flex; align-items: center; gap: 8px; }
+
+/* Navbar buttons inside stButton wrappers */
+div.nav-history-btn div.stButton > button {
+    background: transparent !important;
+    color: #6c8fff !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 7px !important;
+    padding: 5px 14px !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    height: 32px !important;
+    cursor: pointer !important;
+}
+div.nav-history-btn div.stButton > button:hover {
+    border-color: #6c8fff !important;
+    background: #0f1528 !important;
+}
+div.nav-logout-btn div.stButton > button {
+    background: transparent !important;
+    color: #4a5580 !important;
+    border: 1px solid #1e2540 !important;
+    border-radius: 7px !important;
+    padding: 5px 14px !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    height: 32px !important;
+    cursor: pointer !important;
+}
+div.nav-logout-btn div.stButton > button:hover {
+    color: #f87171 !important;
+    border-color: #4a1515 !important;
+    background: #150a0a !important;
+}
 
 .hero {
     background: linear-gradient(180deg, #0f1528 0%, #0c0f1a 100%);
@@ -228,23 +173,7 @@ div[data-testid="stNumberInput"] input {
 pipe = joblib.load("models/loan_model.pkl")
 email = st.session_state.get("email", "")
 
-# ── Sidebar ──
-with st.sidebar:
-    st.markdown(f"""
-    <div class="sidebar-logo">Loan<em>Sense</em></div>
-    <div class="sidebar-email">{email}</div>
-    <div class="sidebar-divider"></div>
-    """, unsafe_allow_html=True)
-
-    if st.button("📋  Loan History", key="sidebar_history_btn"):
-        st.session_state["page"] = "dashboard"
-        st.rerun()
-
-    if st.button("🚪  Logout", key="sidebar_logout_btn"):
-        st.session_state.clear()
-        st.rerun()
-
-# ── Navbar ──
+# ── Navbar with buttons ──
 st.markdown(f"""
 <div class="navbar">
     <div class="navbar-left">
@@ -252,8 +181,26 @@ st.markdown(f"""
         <div class="nav-dot"></div>
         <div class="nav-email">{email}</div>
     </div>
+    <div class="navbar-right">
 </div>
 """, unsafe_allow_html=True)
+
+# Buttons rendered inside navbar-right using columns trick
+nav_col1, nav_col2, nav_col3 = st.columns([6, 1, 1])
+with nav_col2:
+    st.markdown('<div class="nav-history-btn">', unsafe_allow_html=True)
+    if st.button("📋 History", key="nav_history_btn"):
+        st.session_state["page"] = "dashboard"
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+with nav_col3:
+    st.markdown('<div class="nav-logout-btn">', unsafe_allow_html=True)
+    if st.button("🚪 Logout", key="nav_logout_btn"):
+        st.session_state.clear()
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Dashboard Page ──
 if st.session_state.get("page") == "dashboard":

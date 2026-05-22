@@ -8,7 +8,7 @@ if "user" not in st.session_state:
     show_auth_page()
     st.stop()
 
-st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="wide")
+st.set_page_config(page_title="LoanSense AI", page_icon="🏦", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
 <style>
@@ -36,43 +36,58 @@ section.main > div {
     padding-top: 0 !important;
 }
 
-/* ── Sidebar ── */
+/* ── Sidebar base ── */
 [data-testid="stSidebar"] {
     background: #080b14 !important;
     border-right: 1px solid #161c30 !important;
-    min-width: 220px !important;
+    min-width: 240px !important;
+    width: 240px !important;
+}
+[data-testid="stSidebar"] > div:first-child {
+    background: #080b14 !important;
+    padding-top: 1.5rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
 }
 [data-testid="stSidebar"] * { color: #eef0f8 !important; }
 
-/* Fix sidebar collapse toggle button visibility */
-[data-testid="stSidebarCollapseButton"] {
-    background: #0f1528 !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 8px !important;
-    color: #6c8fff !important;
+/* ── Force sidebar collapse/expand arrow to be visible ── */
+button[data-testid="stSidebarCollapseButton"],
+button[data-testid="stSidebarOpenButton"],
+[data-testid="collapsedControl"] {
+    display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-}
-[data-testid="stSidebarCollapseButton"]:hover {
-    background: #161c30 !important;
-    border-color: #6c8fff !important;
-}
-[data-testid="stSidebarCollapseButton"] svg {
-    fill: #6c8fff !important;
-    stroke: #6c8fff !important;
-}
-
-/* Sidebar expand button (when sidebar is collapsed) */
-[data-testid="stSidebarOpenButton"] {
     background: #0f1528 !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 8px !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    border: 1px solid #2a3460 !important;
+    border-radius: 0 8px 8px 0 !important;
+    width: 28px !important;
+    height: 48px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    position: fixed !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
 }
-[data-testid="stSidebarOpenButton"] svg {
+button[data-testid="stSidebarCollapseButton"] svg,
+button[data-testid="stSidebarOpenButton"] svg,
+[data-testid="collapsedControl"] svg {
     fill: #6c8fff !important;
     stroke: #6c8fff !important;
+    width: 16px !important;
+    height: 16px !important;
+    display: block !important;
+}
+/* When sidebar is open, collapse button sits at sidebar edge */
+button[data-testid="stSidebarCollapseButton"] {
+    left: 240px !important;
+}
+/* When sidebar is closed, open button sits at left edge */
+button[data-testid="stSidebarOpenButton"],
+[data-testid="collapsedControl"] {
+    left: 0px !important;
 }
 
 .sidebar-logo {
@@ -83,43 +98,37 @@ section.main > div {
     margin-bottom: 4px;
 }
 .sidebar-logo em { font-style: italic; color: #6c8fff; }
-.sidebar-email { font-size: 0.72rem; color: #4a5580; margin-bottom: 2rem; }
-.sidebar-divider { height: 1px; background: #1e2540; margin: 1rem 0; }
+.sidebar-email { font-size: 0.72rem; color: #4a5580; margin-bottom: 1.5rem; word-break: break-all; }
+.sidebar-divider { height: 1px; background: #1e2540; margin: 0.75rem 0 1rem 0; }
 
-/* ── Sidebar buttons: proper stacking alignment ── */
-[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0 !important;
-}
-
+/* ── Sidebar buttons: stacked, full-width ── */
 [data-testid="stSidebar"] div.stButton {
     width: 100% !important;
-    display: block !important;
+    margin-bottom: 6px !important;
 }
-
 [data-testid="stSidebar"] div.stButton > button {
     width: 100% !important;
     background: transparent !important;
-    color: #4a5580 !important;
+    color: #8892b0 !important;
     border: 1px solid #1e2540 !important;
     border-radius: 8px !important;
-    padding: 8px 16px !important;
-    font-size: 0.72rem !important;
+    padding: 9px 14px !important;
+    font-size: 0.75rem !important;
     font-weight: 600 !important;
-    letter-spacing: 1px !important;
+    letter-spacing: 0.8px !important;
     text-transform: uppercase !important;
     text-align: left !important;
-    margin-bottom: 6px !important;
-    display: block !important;
+    transition: all 0.15s ease !important;
 }
 [data-testid="stSidebar"] div.stButton > button:hover {
     color: #eef0f8 !important;
     border-color: #6c8fff !important;
     background: #0f1528 !important;
 }
-
-/* Logout button — last stButton in sidebar gets red hover */
+[data-testid="stSidebar"] div.stButton:last-of-type > button {
+    color: #6b4545 !important;
+    border-color: #2a1515 !important;
+}
 [data-testid="stSidebar"] div.stButton:last-of-type > button:hover {
     color: #f87171 !important;
     border-color: #4a1515 !important;

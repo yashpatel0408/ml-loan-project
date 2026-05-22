@@ -42,15 +42,13 @@ header[data-testid="stHeader"] { display: none !important; }
 .navbar {
     background: #080b14;
     border-bottom: 1px solid #161c30;
-    margin: -4rem -1rem 0 -1rem;
-    padding: 0 24px;
+    margin: 0 0 0 0;
+    padding: 0 28px;
     height: 52px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    width: 100%;
 }
 .navbar-left { display: flex; align-items: center; gap: 10px; }
 .nav-logo { font-family: 'Fraunces', serif; font-size: 1.15rem; color: #eef0f8; font-weight: 600; letter-spacing: -0.5px; }

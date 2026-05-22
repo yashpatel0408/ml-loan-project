@@ -30,68 +30,73 @@ header[data-testid="stHeader"] { display: none !important; }
 [data-testid="stSidebarOpenButton"] { display: none !important; }
 [data-testid="collapsedControl"] { display: none !important; }
 
-section.main > div {
-    max-width: 760px !important;
-    margin: 0 auto !important;
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-}
 .block-container {
-    max-width: 760px !important;
+    max-width: 860px !important;
     margin: 0 auto !important;
     padding-top: 0 !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
 }
 
 /* ── Navbar ── */
 .navbar {
     background: #080b14;
     border-bottom: 1px solid #161c30;
-    margin: -1rem -1rem 0 -1rem;
-    padding: 0 22px;
-    height: 54px;
+    margin: -4rem -1rem 0 -1rem;
+    padding: 0 24px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 .navbar-left { display: flex; align-items: center; gap: 10px; }
-.nav-logo { font-family: 'Fraunces', serif; font-size: 1.2rem; color: #eef0f8; font-weight: 600; letter-spacing: -0.5px; }
+.nav-logo { font-family: 'Fraunces', serif; font-size: 1.15rem; color: #eef0f8; font-weight: 600; letter-spacing: -0.5px; }
 .nav-logo em { font-style: italic; color: #6c8fff; }
-.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #6c8fff; opacity: 0.7; }
-.nav-email { font-size: 0.72rem; color: #4a5580; }
-.navbar-right { display: flex; align-items: center; gap: 8px; }
+.nav-dot { width: 5px; height: 5px; border-radius: 50%; background: #6c8fff; opacity: 0.6; }
+.nav-email { font-size: 0.7rem; color: #4a5580; }
 
-/* Navbar buttons inside stButton wrappers */
-div.nav-history-btn div.stButton > button {
+/* ── Navbar button columns: push to right, fix height ── */
+div[data-testid="stHorizontalBlock"] {
+    gap: 0 !important;
+    align-items: center !important;
+}
+
+/* Target only the nav buttons by wrapping class */
+.nav-btn-history button,
+.nav-btn-logout button {
+    white-space: nowrap !important;
+    min-width: 90px !important;
+    height: 30px !important;
+    padding: 0 14px !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.8px !important;
+    text-transform: uppercase !important;
+    border-radius: 6px !important;
+    line-height: 1 !important;
+    font-family: 'Geist', sans-serif !important;
+}
+
+.nav-btn-history button {
     background: transparent !important;
     color: #6c8fff !important;
-    border: 1px solid #1e2540 !important;
-    border-radius: 7px !important;
-    padding: 5px 14px !important;
-    font-size: 0.68rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 1px !important;
-    text-transform: uppercase !important;
-    height: 32px !important;
-    cursor: pointer !important;
+    border: 1px solid #2a3460 !important;
 }
-div.nav-history-btn div.stButton > button:hover {
-    border-color: #6c8fff !important;
+.nav-btn-history button:hover {
     background: #0f1528 !important;
+    border-color: #6c8fff !important;
 }
-div.nav-logout-btn div.stButton > button {
+
+.nav-btn-logout button {
     background: transparent !important;
     color: #4a5580 !important;
     border: 1px solid #1e2540 !important;
-    border-radius: 7px !important;
-    padding: 5px 14px !important;
-    font-size: 0.68rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 1px !important;
-    text-transform: uppercase !important;
-    height: 32px !important;
-    cursor: pointer !important;
+    margin-left: 6px !important;
 }
-div.nav-logout-btn div.stButton > button:hover {
+.nav-btn-logout button:hover {
     color: #f87171 !important;
     border-color: #4a1515 !important;
     background: #150a0a !important;
@@ -99,7 +104,7 @@ div.nav-logout-btn div.stButton > button:hover {
 
 .hero {
     background: linear-gradient(180deg, #0f1528 0%, #0c0f1a 100%);
-    padding: 26px 4px 20px;
+    padding: 28px 4px 22px;
     border-bottom: 1px solid #161c30;
     margin-bottom: 20px;
 }
@@ -173,7 +178,7 @@ div[data-testid="stNumberInput"] input {
 pipe = joblib.load("models/loan_model.pkl")
 email = st.session_state.get("email", "")
 
-# ── Navbar with buttons ──
+# ── Navbar ──
 st.markdown(f"""
 <div class="navbar">
     <div class="navbar-left">
@@ -181,26 +186,23 @@ st.markdown(f"""
         <div class="nav-dot"></div>
         <div class="nav-email">{email}</div>
     </div>
-    <div class="navbar-right">
 </div>
 """, unsafe_allow_html=True)
 
-# Buttons rendered inside navbar-right using columns trick
-nav_col1, nav_col2, nav_col3 = st.columns([6, 1, 1])
-with nav_col2:
-    st.markdown('<div class="nav-history-btn">', unsafe_allow_html=True)
-    if st.button("📋 History", key="nav_history_btn"):
+# Buttons — same row, right-aligned using columns
+col_space, col_h, col_l = st.columns([7, 1, 1])
+with col_h:
+    st.markdown('<div class="nav-btn-history">', unsafe_allow_html=True)
+    if st.button("History", key="nav_history_btn"):
         st.session_state["page"] = "dashboard"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-with nav_col3:
-    st.markdown('<div class="nav-logout-btn">', unsafe_allow_html=True)
-    if st.button("🚪 Logout", key="nav_logout_btn"):
+with col_l:
+    st.markdown('<div class="nav-btn-logout">', unsafe_allow_html=True)
+    if st.button("Logout", key="nav_logout_btn"):
         st.session_state.clear()
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Dashboard Page ──
 if st.session_state.get("page") == "dashboard":

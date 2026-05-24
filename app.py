@@ -424,7 +424,7 @@ if predict_clicked:
     risk_advice = "N/A"
 
     # EMI Calculation
-    loan_amount_full = loan_amount * 1000
+    loan_amount_full = loan_amount
     annual_rate = 8.5
     monthly_rate = annual_rate / (12 * 100)
     n_months = loan_duration * 12
